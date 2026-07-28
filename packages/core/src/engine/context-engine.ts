@@ -15,15 +15,24 @@ export class ContextEngine {
     this.eventBus = PresenceEventBus.getInstance();
   }
 
-  public async processContext(event: ContextEvent): Promise<ExperienceObject | null> {
+  public async processContext(event: ContextEvent, options?: { force?: boolean }): Promise<ExperienceObject | null> {
     // Step 1: Emit Context Captured
     this.eventBus.publish(DomainEventType.CONTEXT_CAPTURED, event);
 
     // Step 2: Classify and Discern via Gloo AI Agent
     const classification = await this.aiPipeline.classifyContext(event);
+    
+    // If forced by explicit user action, always intervene
+    if (options?.force) {
+      classification.shouldIntervene = true;
+      if (classification.contextType === 'general') {
+        classification.contextType = 'creative_block';
+      }
+    }
+
     this.eventBus.publish(DomainEventType.CONTEXT_CLASSIFIED, classification);
 
-    // Step 3: Discernment check - Principle #2: Presence accompanies, doesn't spam
+    // Step 3: Discernment check - Presence accompanies, doesn't spam
     if (!classification.shouldIntervene) {
       console.log(`[ContextEngine] Discernment: No intervention needed for event ${event.id}`);
       return null;

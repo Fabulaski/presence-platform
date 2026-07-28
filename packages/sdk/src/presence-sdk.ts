@@ -49,6 +49,7 @@ export class Presence {
     topic?: string;
     durationSeconds?: number;
     language?: string;
+    force?: boolean;
     metadata?: Record<string, unknown>;
   }): Promise<ExperienceObject | null> {
     const event: ContextEvent = {
@@ -58,14 +59,14 @@ export class Presence {
       platform: this.config.platform || 'custom',
       activity: params.activity,
       topic: params.topic,
-      durationSeconds: params.durationSeconds,
-      language: params.language,
-      confidence: 0.9,
-      metadata: params.metadata,
+      durationSeconds: params.durationSeconds || 0,
+      confidence: 0.95,
+      language: params.language || 'es',
+      metadata: params.metadata || {},
       timestamp: new Date().toISOString()
     };
 
-    return await this.engine.processContext(event);
+    return this.engine.processContext(event, { force: params.force ?? true });
   }
 
   public listen(onExperience: (exp: ExperienceObject) => void): () => void {

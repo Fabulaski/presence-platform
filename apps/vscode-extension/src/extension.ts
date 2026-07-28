@@ -133,6 +133,7 @@ export function activate(context: vscode.ExtensionContext) {
           topic,
           durationSeconds,
           language: currentLang,
+          force: true,
           metadata: { fileName, languageId }
         });
 
