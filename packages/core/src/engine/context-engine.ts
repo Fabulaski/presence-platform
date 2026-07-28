@@ -36,9 +36,11 @@ export class ContextEngine {
     });
 
     // Step 4: Fetch Scripture and Devotional Plan via YouVersion Service Port
+    const lang = event.language || 'es';
     const scripture = await this.scriptureService.findScriptureForNeed({
       need: classification.primaryNeed,
-      topic: event.topic
+      topic: event.topic,
+      language: lang
     });
     this.eventBus.publish(DomainEventType.SCRIPTURE_MATCHED, {
       momentId: `mom_${event.id}`,
@@ -47,10 +49,11 @@ export class ContextEngine {
 
     const youVersionPlan = await this.scriptureService.getReadingPlanForNeed(
       classification.primaryNeed,
-      event.topic
+      event.topic,
+      lang
     );
 
-    // Step 5: Build Complete Experience Object
+    // Step 5: Build Complete Experience Object (pass language for i18n)
     const experience = await this.aiPipeline.buildExperience(event, classification, scripture);
     experience.youVersionPlan = youVersionPlan;
     

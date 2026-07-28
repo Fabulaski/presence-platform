@@ -66,11 +66,15 @@ export function activate(context: vscode.ExtensionContext) {
         const activity = `coding_in_${languageId}`;
         const topic = `file_${fileName}_duration_${durationSeconds}s`;
 
+        // Detect system language (e.g. "es", "en", "pt-br", "fr")
+        const systemLang = vscode.env.language.split('-')[0]; // "es-MX" → "es"
+
         const exp = await presence.capture({
           userId: 'vscode_dev_usr',
           activity,
           topic,
           durationSeconds,
+          language: systemLang,
           metadata: { fileName, languageId }
         });
 

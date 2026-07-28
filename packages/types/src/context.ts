@@ -33,6 +33,7 @@ export interface ContextEvent {
   intent?: string;
   contextType?: ContextType;
   confidence: number; // 0.0 to 1.0
+  language?: string;  // ISO 639-1 code from system locale (e.g. 'es', 'en', 'pt')
   metadata?: Record<string, unknown>;
   timestamp: string;
 }

@@ -48,6 +48,7 @@ export class Presence {
     activity: string;
     topic?: string;
     durationSeconds?: number;
+    language?: string;
     metadata?: Record<string, unknown>;
   }): Promise<ExperienceObject | null> {
     const event: ContextEvent = {
@@ -58,6 +59,7 @@ export class Presence {
       activity: params.activity,
       topic: params.topic,
       durationSeconds: params.durationSeconds,
+      language: params.language,
       confidence: 0.9,
       metadata: params.metadata,
       timestamp: new Date().toISOString()

@@ -320,11 +320,15 @@ export class YouVersionScriptureAdapter implements IScriptureService {
     };
   }
 
-  public async getReadingPlanForNeed(need: SpiritualNeed, topic?: string): Promise<{ title: string; url: string; description?: string }> {
+  public async getReadingPlanForNeed(need: SpiritualNeed, topic?: string, language?: string): Promise<{ title: string; url: string; description?: string }> {
+    const lang = language || 'es';
+    // YouVersion uses locale codes like 'es', 'en', 'pt' in URLs
+    const youVersionLocale = YOUVERSION_LOCALE_MAP[lang] || lang;
+
     if (this.apiKey) {
       try {
-        console.log(`[YouVersion API] Querying devotional plans for adversity/need: "${need}"`);
-        const response = await fetch(`${this.endpointUrl}/plans/search?query=${encodeURIComponent(need)}&language=es`, {
+        console.log(`[YouVersion API] Querying devotional plans for need: "${need}" in language: "${lang}"`);
+        const response = await fetch(`${this.endpointUrl}/plans/search?query=${encodeURIComponent(need)}&language=${lang}`, {
           headers: {
             'X-YouVersion-Developer-Token': this.apiKey,
             'Accept': 'application/json'
@@ -337,8 +341,8 @@ export class YouVersionScriptureAdapter implements IScriptureService {
             const firstPlan = data.plans[0];
             return {
               title: firstPlan.title || firstPlan.name,
-              url: firstPlan.url || `https://www.bible.com/es/reading-plans/${firstPlan.id}`,
-              description: firstPlan.description || `Plan devocional de YouVersion para fortalecer en ${need}.`
+              url: firstPlan.url || `https://www.bible.com/${youVersionLocale}/reading-plans/${firstPlan.id}`,
+              description: firstPlan.description || undefined
             };
           }
         }
@@ -347,41 +351,125 @@ export class YouVersionScriptureAdapter implements IScriptureService {
       }
     }
 
-    const plans = YOUVERSION_PLANS[need] || YOUVERSION_PLANS.hope;
+    // Fallback: use curated multilingual catalog
+    const langPlans = YOUVERSION_PLANS_I18N[lang] || YOUVERSION_PLANS_I18N['es'];
+    const plans = langPlans[need] || langPlans.hope;
     const selected = plans[Math.floor(Math.random() * plans.length)];
-    return selected;
+
+    // Replace {locale} placeholder in URL with the correct locale
+    return {
+      ...selected,
+      url: selected.url.replace('{locale}', youVersionLocale)
+    };
   }
 }
 
-const YOUVERSION_PLANS: Record<SpiritualNeed, Array<{ title: string; url: string; description: string }>> = {
-  hope: [
-    { title: 'Esperanza Inquebrantable', url: 'https://www.bible.com/es/reading-plans/26893', description: 'Renueva tu fe y encuentra esperanza renovada para superar cualquier obstáculo en tu jornada.' },
-    { title: 'Promesas de Dios para Tiempos Difíciles', url: 'https://www.bible.com/es/reading-plans/14520', description: 'Descubre el propósito de Dios y sus promesas en momentos de incertidumbre.' }
-  ],
-  peace: [
-    { title: 'Paz en la Tormenta', url: 'https://www.bible.com/es/reading-plans/24016', description: 'Encuentra calma y serenidad mental cuando la presión y la ansiedad intentan abrumarte.' },
-    { title: 'Superando la Ansiedad y el Estrés', url: 'https://www.bible.com/es/reading-plans/18932', description: 'Herramientas bíblicas prácticas para guardar tu mente en completa paz.' }
-  ],
-  wisdom: [
-    { title: 'Sabiduría de lo Alto', url: 'https://www.bible.com/es/reading-plans/20892', description: 'Luz y dirección divina para tomar decisiones sabias y estructurar soluciones complejas.' },
-    { title: 'Proverbios: Discernimiento para la Vida', url: 'https://www.bible.com/es/reading-plans/15600', description: 'Principios eternos para resolver desafíos cotidianos con claridad y orden.' }
-  ],
-  rest: [
-    { title: 'Descansa en Su Presencia', url: 'https://www.bible.com/es/reading-plans/25498', description: 'Un llamado a pausar, soltar el agotamiento mental y renovar tus fuerzas en Dios.' },
-    { title: 'El Arte de Pausar y Renovar', url: 'https://www.bible.com/es/reading-plans/17840', description: 'Aprende a descansar físicamente y mentalmente sin culpabilidad.' }
-  ],
-  perseverance: [
-    { title: 'No Te Rindas: Firmeza hasta el Final', url: 'https://www.bible.com/es/reading-plans/22344', description: 'Fortaleza espiritual para continuar construyendo y no desmayar ante el cansancio.' },
-    { title: 'Perseverancia y Victoria', url: 'https://www.bible.com/es/reading-plans/19410', description: 'Persevera en la carrera de la vida con la mirada fija en el propósito.' }
-  ],
-  courage: [
-    { title: 'Valentía para Avanzar', url: 'https://www.bible.com/es/reading-plans/21947', description: 'Vence el temor al fallo y toma decisiones valientes para innovar y crear.' },
-    { title: 'Sin Temor en el Desafío', url: 'https://www.bible.com/es/reading-plans/16720', description: 'Desarrolla un espíritu de poder, amor y dominio propio ante lo desconocido.' }
-  ],
-  comfort: [
-    { title: 'Consuelo en Tiempos Difíciles', url: 'https://www.bible.com/es/reading-plans/23160', description: 'El abrazo amoroso de Dios cerca de quienes atraviesan agobio o dolor.' }
-  ],
-  joy: [
-    { title: 'El Gozo del Señor es tu Fuerza', url: 'https://www.bible.com/es/reading-plans/25670', description: 'Celebra cada logro y vive con gratitud y alegría continua en tu labor.' }
-  ]
+// ─── YouVersion Locale Mapping ──────────────────────────────────────────────
+const YOUVERSION_LOCALE_MAP: Record<string, string> = {
+  es: 'es', en: 'en', pt: 'pt', fr: 'fr', de: 'de', it: 'it',
+  ko: 'ko', ja: 'ja', zh: 'zh', ru: 'ru', ar: 'ar', hi: 'hi',
+  nl: 'nl', pl: 'pl', sv: 'sv', da: 'da', no: 'no', fi: 'fi'
+};
+
+// ─── Multilingual YouVersion Reading Plans Catalog ──────────────────────────
+type PlanEntry = { title: string; url: string; description: string };
+type NeedPlans = Record<SpiritualNeed, PlanEntry[]>;
+
+const YOUVERSION_PLANS_I18N: Record<string, NeedPlans> = {
+  es: {
+    hope: [
+      { title: 'Esperanza Inquebrantable', url: 'https://www.bible.com/{locale}/reading-plans/26893', description: 'Renueva tu fe y encuentra esperanza renovada para superar cualquier obstáculo en tu jornada.' },
+      { title: 'Promesas de Dios para Tiempos Difíciles', url: 'https://www.bible.com/{locale}/reading-plans/14520', description: 'Descubre el propósito de Dios y sus promesas en momentos de incertidumbre.' }
+    ],
+    peace: [
+      { title: 'Paz en la Tormenta', url: 'https://www.bible.com/{locale}/reading-plans/24016', description: 'Encuentra calma y serenidad mental cuando la presión y la ansiedad intentan abrumarte.' },
+      { title: 'Superando la Ansiedad y el Estrés', url: 'https://www.bible.com/{locale}/reading-plans/18932', description: 'Herramientas bíblicas prácticas para guardar tu mente en completa paz.' }
+    ],
+    wisdom: [
+      { title: 'Sabiduría de lo Alto', url: 'https://www.bible.com/{locale}/reading-plans/20892', description: 'Luz y dirección divina para tomar decisiones sabias y estructurar soluciones complejas.' },
+      { title: 'Proverbios: Discernimiento para la Vida', url: 'https://www.bible.com/{locale}/reading-plans/15600', description: 'Principios eternos para resolver desafíos cotidianos con claridad y orden.' }
+    ],
+    rest: [
+      { title: 'Descansa en Su Presencia', url: 'https://www.bible.com/{locale}/reading-plans/25498', description: 'Un llamado a pausar, soltar el agotamiento mental y renovar tus fuerzas en Dios.' },
+      { title: 'El Arte de Pausar y Renovar', url: 'https://www.bible.com/{locale}/reading-plans/17840', description: 'Aprende a descansar físicamente y mentalmente sin culpabilidad.' }
+    ],
+    perseverance: [
+      { title: 'No Te Rindas: Firmeza hasta el Final', url: 'https://www.bible.com/{locale}/reading-plans/22344', description: 'Fortaleza espiritual para continuar construyendo y no desmayar ante el cansancio.' },
+      { title: 'Perseverancia y Victoria', url: 'https://www.bible.com/{locale}/reading-plans/19410', description: 'Persevera en la carrera de la vida con la mirada fija en el propósito.' }
+    ],
+    courage: [
+      { title: 'Valentía para Avanzar', url: 'https://www.bible.com/{locale}/reading-plans/21947', description: 'Vence el temor al fallo y toma decisiones valientes para innovar y crear.' },
+      { title: 'Sin Temor en el Desafío', url: 'https://www.bible.com/{locale}/reading-plans/16720', description: 'Desarrolla un espíritu de poder, amor y dominio propio ante lo desconocido.' }
+    ],
+    comfort: [
+      { title: 'Consuelo en Tiempos Difíciles', url: 'https://www.bible.com/{locale}/reading-plans/23160', description: 'El abrazo amoroso de Dios cerca de quienes atraviesan agobio o dolor.' }
+    ],
+    joy: [
+      { title: 'El Gozo del Señor es tu Fuerza', url: 'https://www.bible.com/{locale}/reading-plans/25670', description: 'Celebra cada logro y vive con gratitud y alegría continua en tu labor.' }
+    ]
+  },
+  en: {
+    hope: [
+      { title: 'Unshakeable Hope', url: 'https://www.bible.com/{locale}/reading-plans/26893', description: 'Renew your faith and find renewed hope to overcome any obstacle in your journey.' },
+      { title: "God's Promises for Hard Times", url: 'https://www.bible.com/{locale}/reading-plans/14520', description: "Discover God's purpose and promises in times of uncertainty." }
+    ],
+    peace: [
+      { title: 'Peace in the Storm', url: 'https://www.bible.com/{locale}/reading-plans/24016', description: 'Find calm and mental serenity when pressure and anxiety try to overwhelm you.' },
+      { title: 'Overcoming Anxiety and Stress', url: 'https://www.bible.com/{locale}/reading-plans/18932', description: 'Practical biblical tools to guard your mind in complete peace.' }
+    ],
+    wisdom: [
+      { title: 'Wisdom from Above', url: 'https://www.bible.com/{locale}/reading-plans/20892', description: 'Divine light and direction to make wise decisions and structure complex solutions.' },
+      { title: 'Proverbs: Discernment for Life', url: 'https://www.bible.com/{locale}/reading-plans/15600', description: 'Eternal principles to solve daily challenges with clarity and order.' }
+    ],
+    rest: [
+      { title: 'Rest in His Presence', url: 'https://www.bible.com/{locale}/reading-plans/25498', description: 'A call to pause, release mental exhaustion and renew your strength in God.' },
+      { title: 'The Art of Pausing and Renewal', url: 'https://www.bible.com/{locale}/reading-plans/17840', description: 'Learn to rest physically and mentally without guilt.' }
+    ],
+    perseverance: [
+      { title: "Don't Give Up: Firmness to the End", url: 'https://www.bible.com/{locale}/reading-plans/22344', description: 'Spiritual strength to keep building and not faint under weariness.' },
+      { title: 'Perseverance and Victory', url: 'https://www.bible.com/{locale}/reading-plans/19410', description: 'Persevere in the race of life with your gaze fixed on purpose.' }
+    ],
+    courage: [
+      { title: 'Courage to Move Forward', url: 'https://www.bible.com/{locale}/reading-plans/21947', description: 'Overcome the fear of failure and make bold decisions to innovate and create.' },
+      { title: 'Fearless in the Challenge', url: 'https://www.bible.com/{locale}/reading-plans/16720', description: 'Develop a spirit of power, love and self-control in the face of the unknown.' }
+    ],
+    comfort: [
+      { title: 'Comfort in Hard Times', url: 'https://www.bible.com/{locale}/reading-plans/23160', description: "God's loving embrace near those going through distress or pain." }
+    ],
+    joy: [
+      { title: 'The Joy of the Lord is Your Strength', url: 'https://www.bible.com/{locale}/reading-plans/25670', description: 'Celebrate every achievement and live with gratitude and continuous joy in your work.' }
+    ]
+  },
+  pt: {
+    hope: [
+      { title: 'Esperança Inabalável', url: 'https://www.bible.com/{locale}/reading-plans/26893', description: 'Renove sua fé e encontre esperança renovada para superar qualquer obstáculo em sua jornada.' },
+      { title: 'Promessas de Deus para Tempos Difíceis', url: 'https://www.bible.com/{locale}/reading-plans/14520', description: 'Descubra o propósito de Deus e suas promessas em momentos de incerteza.' }
+    ],
+    peace: [
+      { title: 'Paz na Tempestade', url: 'https://www.bible.com/{locale}/reading-plans/24016', description: 'Encontre calma e serenidade mental quando a pressão e a ansiedade tentam te sobrecarregar.' },
+      { title: 'Superando Ansiedade e Estresse', url: 'https://www.bible.com/{locale}/reading-plans/18932', description: 'Ferramentas bíblicas práticas para guardar sua mente em paz completa.' }
+    ],
+    wisdom: [
+      { title: 'Sabedoria do Alto', url: 'https://www.bible.com/{locale}/reading-plans/20892', description: 'Luz e direção divina para tomar decisões sábias e estruturar soluções complexas.' },
+      { title: 'Provérbios: Discernimento para a Vida', url: 'https://www.bible.com/{locale}/reading-plans/15600', description: 'Princípios eternos para resolver desafios diários com clareza e ordem.' }
+    ],
+    rest: [
+      { title: 'Descanse na Sua Presença', url: 'https://www.bible.com/{locale}/reading-plans/25498', description: 'Um chamado para pausar, soltar o esgotamento mental e renovar suas forças em Deus.' },
+      { title: 'A Arte de Pausar e Renovar', url: 'https://www.bible.com/{locale}/reading-plans/17840', description: 'Aprenda a descansar física e mentalmente sem culpa.' }
+    ],
+    perseverance: [
+      { title: 'Não Desista: Firmeza até o Fim', url: 'https://www.bible.com/{locale}/reading-plans/22344', description: 'Força espiritual para continuar construindo e não desanimar diante do cansaço.' },
+      { title: 'Perseverança e Vitória', url: 'https://www.bible.com/{locale}/reading-plans/19410', description: 'Persevere na corrida da vida com o olhar fixo no propósito.' }
+    ],
+    courage: [
+      { title: 'Coragem para Avançar', url: 'https://www.bible.com/{locale}/reading-plans/21947', description: 'Vença o medo do fracasso e tome decisões corajosas para inovar e criar.' },
+      { title: 'Sem Medo no Desafio', url: 'https://www.bible.com/{locale}/reading-plans/16720', description: 'Desenvolva um espírito de poder, amor e domínio próprio diante do desconhecido.' }
+    ],
+    comfort: [
+      { title: 'Consolo em Tempos Difíceis', url: 'https://www.bible.com/{locale}/reading-plans/23160', description: 'O abraço amoroso de Deus perto de quem atravessa angústia ou dor.' }
+    ],
+    joy: [
+      { title: 'A Alegria do Senhor é a sua Força', url: 'https://www.bible.com/{locale}/reading-plans/25670', description: 'Celebre cada conquista e viva com gratidão e alegria contínua em seu trabalho.' }
+    ]
+  }
 };

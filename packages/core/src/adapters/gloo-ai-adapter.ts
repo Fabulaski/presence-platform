@@ -177,19 +177,30 @@ Reglas:
   }
 
   // ─── Reflection Generation (GPT-Powered) ──────────────────────────────
-  public async generateReflection(need: SpiritualNeed, scripture: ScriptureMatch, topic?: string): Promise<GeneratedReflectionData> {
+  public async generateReflection(need: SpiritualNeed, scripture: ScriptureMatch, topic?: string, language?: string): Promise<GeneratedReflectionData> {
     const topicClean = this.cleanTopic(topic);
+    const lang = language || 'es';
 
-    const needLabels: Record<SpiritualNeed, string> = {
-      wisdom: 'sabiduría', rest: 'descanso', peace: 'paz interior',
-      hope: 'esperanza', perseverance: 'perseverancia', courage: 'valentía',
-      comfort: 'consuelo', joy: 'gozo y gratitud'
+    const LANG_LABELS: Record<string, Record<SpiritualNeed, string>> = {
+      es: { wisdom: 'sabiduría', rest: 'descanso', peace: 'paz interior', hope: 'esperanza', perseverance: 'perseverancia', courage: 'valentía', comfort: 'consuelo', joy: 'gozo y gratitud' },
+      en: { wisdom: 'wisdom', rest: 'rest', peace: 'inner peace', hope: 'hope', perseverance: 'perseverance', courage: 'courage', comfort: 'comfort', joy: 'joy and gratitude' },
+      pt: { wisdom: 'sabedoria', rest: 'descanso', peace: 'paz interior', hope: 'esperança', perseverance: 'perseverança', courage: 'coragem', comfort: 'consolo', joy: 'alegria e gratidão' }
     };
+    const needLabels = LANG_LABELS[lang] || LANG_LABELS['es'];
+
+    const LANG_INSTRUCTIONS: Record<string, string> = {
+      es: 'Escribe en ESPAÑOL, con tono pastoral cercano (no formal ni religioso rígido).',
+      en: 'Write in ENGLISH, with a warm pastoral tone (not formal or rigidly religious).',
+      pt: 'Escreva em PORTUGUÊS, com tom pastoral caloroso (não formal nem rigidamente religioso).',
+      fr: 'Écrivez en FRANÇAIS, avec un ton pastoral chaleureux (ni formel ni rigidement religieux).',
+      de: 'Schreiben Sie auf DEUTSCH, mit einem warmherzigen pastoralen Ton (nicht formell oder starr religiös).'
+    };
+    const langInstruction = LANG_INSTRUCTIONS[lang] || LANG_INSTRUCTIONS['es'];
 
     const systemPrompt = `Eres el Agente de Reflexión Espiritual de Presence Platform. Tu misión es generar un momento de acompañamiento espiritual breve, cálido y genuino para un desarrollador de software.
 
 IMPORTANTE:
-- Escribe en ESPAÑOL, con tono pastoral cercano (no formal ni religioso rígido).
+- ${langInstruction}
 - La reflexión debe conectar el versículo bíblico con la experiencia concreta del desarrollador.
 - La oración debe ser breve (1-2 frases), íntima, como si hablaras con un amigo.
 - La micro-acción debe ser práctica, realizable en 60 segundos.
@@ -207,12 +218,13 @@ Responde EXCLUSIVAMENTE en JSON:
     const userPrompt = `Necesidad espiritual: ${needLabels[need] || need}
 Versículo: "${scripture.text}" (${scripture.reference})
 Módulo activo del desarrollador: ${topicClean}
+Idioma del sistema: ${lang}
 Hora local aproximada: ${new Date().getHours()}:${String(new Date().getMinutes()).padStart(2, '0')}`;
 
     const parsed = await this.callOpenAI(systemPrompt, userPrompt);
 
     if (parsed && parsed.reflection) {
-      console.log(`[OpenAI] ✅ Reflexión GPT generada: "${parsed.title}"`);
+      console.log(`[OpenAI] ✅ Reflexión GPT generada (${lang}): "${parsed.title}"`);
       return {
         title: parsed.title || 'Un Momento con Dios',
         reflection: parsed.reflection,
@@ -242,7 +254,7 @@ Hora local aproximada: ${new Date().getHours()}:${String(new Date().getMinutes()
     classification: ContextClassification,
     scripture: ScriptureMatch
   ): Promise<ExperienceObject> {
-    const generated = await this.generateReflection(classification.primaryNeed, scripture, event.topic);
+    const generated = await this.generateReflection(classification.primaryNeed, scripture, event.topic, event.language);
 
     return {
       id: `exp_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
