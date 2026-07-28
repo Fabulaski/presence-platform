@@ -90,4 +90,27 @@ export class LiveExperienceStore {
       topNeed
     };
   }
+
+  /** Returns percentage distribution of all spiritual needs, sorted descending */
+  public getNeedDistribution(): Array<{ need: string; label: string; count: number; percent: number }> {
+    const total = this.experiences.length || 1;
+    const needCounts: Record<string, number> = {};
+    this.experiences.forEach((e) => {
+      needCounts[e.need] = (needCounts[e.need] || 0) + 1;
+    });
+
+    const labelMap: Record<string, string> = {
+      hope: 'Esperanza', peace: 'Paz', wisdom: 'Sabiduría', rest: 'Descanso',
+      perseverance: 'Perseverancia', courage: 'Valentía', comfort: 'Consuelo', joy: 'Gozo'
+    };
+
+    return Object.entries(needCounts)
+      .map(([need, count]) => ({
+        need,
+        label: labelMap[need] || need,
+        count,
+        percent: Math.round((count / total) * 100)
+      }))
+      .sort((a, b) => b.percent - a.percent);
+  }
 }

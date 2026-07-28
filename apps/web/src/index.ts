@@ -63,7 +63,8 @@ app.get('/api/v1/live-stream', (req: Request, res: Response) => {
   res.json({
     metrics: store.getMetrics(),
     experiences: store.getExperiences(),
-    latestExperience: store.getExperiences()[0] || null
+    latestExperience: store.getExperiences()[0] || null,
+    needDistribution: store.getNeedDistribution()
   });
 });
 
@@ -205,26 +206,67 @@ app.get('/', async (req: Request, res: Response) => {
           </div>
         </section>
 
-        <!-- Presence Studio Configurator -->
+        <!-- Spiritual Needs Distribution & YouVersion Plans -->
         <section class="glass p-8 rounded-3xl space-y-6">
-          <div>
-            <h3 class="text-2xl font-bold flex items-center gap-2">🎛️ Presence Studio</h3>
-            <p class="text-slate-400 text-sm">Configuración personalizada para ministerios e iglesias de la plataforma.</p>
+          <div class="flex justify-between items-center">
+            <div>
+              <h3 class="text-2xl font-bold flex items-center gap-2">📊 Distribución de Necesidades Espirituales</h3>
+              <p class="text-slate-400 text-sm mt-1">Porcentaje de temas identificados en las sesiones del desarrollador</p>
+            </div>
+            <span class="text-xs text-slate-400 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-indigo-400 animate-ping"></span> Actualización en vivo
+            </span>
           </div>
 
-          <div class="grid md:grid-cols-3 gap-6">
-            <div class="bg-slate-950/60 p-5 rounded-xl border border-slate-800 space-y-2">
-              <div class="text-xs font-semibold text-slate-400 uppercase">Organización / Ministerio</div>
-              <div class="text-lg font-bold text-slate-100">${studio.churchName}</div>
-            </div>
-            <div class="bg-slate-950/60 p-5 rounded-xl border border-slate-800 space-y-2">
-              <div class="text-xs font-semibold text-slate-400 uppercase">Tono Pastoral Configurado</div>
-              <div class="text-lg font-bold text-indigo-400">${studio.tone.toUpperCase()}</div>
-            </div>
-            <div class="bg-slate-950/60 p-5 rounded-xl border border-slate-800 space-y-2">
-              <div class="text-xs font-semibold text-slate-400 uppercase">Traducción Bíblica por Defecto</div>
-              <div class="text-lg font-bold text-emerald-400">${studio.defaultTranslation}</div>
-            </div>
+          <div id="needs-distribution" class="space-y-4">
+            ${(() => {
+              const dist = store.getNeedDistribution();
+              const colorMap: Record<string, { bar: string; text: string; bg: string }> = {
+                hope:         { bar: 'bg-amber-400',   text: 'text-amber-400',   bg: 'bg-amber-400/10' },
+                peace:        { bar: 'bg-sky-400',     text: 'text-sky-400',     bg: 'bg-sky-400/10' },
+                wisdom:       { bar: 'bg-violet-400',  text: 'text-violet-400',  bg: 'bg-violet-400/10' },
+                rest:         { bar: 'bg-emerald-400', text: 'text-emerald-400', bg: 'bg-emerald-400/10' },
+                perseverance: { bar: 'bg-orange-400',  text: 'text-orange-400',  bg: 'bg-orange-400/10' },
+                courage:      { bar: 'bg-rose-400',    text: 'text-rose-400',    bg: 'bg-rose-400/10' },
+                comfort:      { bar: 'bg-pink-400',    text: 'text-pink-400',    bg: 'bg-pink-400/10' },
+                joy:          { bar: 'bg-yellow-400',  text: 'text-yellow-400',  bg: 'bg-yellow-400/10' }
+              };
+              const youVersionPlans: Record<string, { url: string; planName: string }> = {
+                hope:         { url: 'https://www.bible.com/es/reading-plans/26893', planName: 'Esperanza Inquebrantable' },
+                peace:        { url: 'https://www.bible.com/es/reading-plans/24016', planName: 'Paz en la Tormenta' },
+                wisdom:       { url: 'https://www.bible.com/es/reading-plans/20892', planName: 'Sabiduría de lo Alto' },
+                rest:         { url: 'https://www.bible.com/es/reading-plans/25498', planName: 'Descansa en Su Presencia' },
+                perseverance: { url: 'https://www.bible.com/es/reading-plans/22344', planName: 'No Te Rindas' },
+                courage:      { url: 'https://www.bible.com/es/reading-plans/21947', planName: 'Valentía para Avanzar' },
+                comfort:      { url: 'https://www.bible.com/es/reading-plans/23160', planName: 'Consuelo en Tiempos Difíciles' },
+                joy:          { url: 'https://www.bible.com/es/reading-plans/25670', planName: 'El Gozo del Señor' }
+              };
+              if (dist.length === 0) {
+                return '<p class="text-slate-500 text-sm italic">Aún no hay datos suficientes. Usa la extensión de VS Code para generar experiencias.</p>';
+              }
+              return dist.map(d => {
+                const c = colorMap[d.need] || { bar: 'bg-slate-400', text: 'text-slate-400', bg: 'bg-slate-400/10' };
+                const plan = youVersionPlans[d.need] || { url: 'https://www.bible.com/es/reading-plans', planName: 'Explorar Planes' };
+                return `
+                  <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800 hover:border-slate-700 transition">
+                    <div class="flex justify-between items-center mb-2">
+                      <div class="flex items-center gap-3">
+                        <span class="text-base font-bold ${c.text}">${d.label}</span>
+                        <span class="px-2 py-0.5 rounded-full text-xs font-semibold ${c.bg} ${c.text} border border-current/10">${d.count} ${d.count === 1 ? 'vez' : 'veces'}</span>
+                      </div>
+                      <span class="text-2xl font-extrabold ${c.text}">${d.percent}%</span>
+                    </div>
+                    <div class="w-full bg-slate-800 rounded-full h-2.5 mb-3">
+                      <div class="${c.bar} h-2.5 rounded-full transition-all duration-700 ease-out" style="width: ${d.percent}%"></div>
+                    </div>
+                    <a href="${plan.url}" target="_blank" rel="noopener noreferrer"
+                       class="inline-flex items-center gap-1.5 text-xs font-medium ${c.text} hover:underline transition">
+                      📖 Plan YouVersion: ${plan.planName} →
+                    </a>
+                  </div>
+                `;
+              }).join('');
+            })()}
           </div>
         </section>
 
@@ -274,6 +316,53 @@ app.get('/', async (req: Request, res: Response) => {
                   <td class="p-2.5"><span class="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Intervenido</span></td>
                 </tr>
               \`).join('');
+            }
+
+            // Update Spiritual Needs Distribution
+            if (data.needDistribution && Array.isArray(data.needDistribution)) {
+              const colorMap = {
+                hope:         { bar: 'bg-amber-400',   text: 'text-amber-400',   bg: 'bg-amber-400/10' },
+                peace:        { bar: 'bg-sky-400',     text: 'text-sky-400',     bg: 'bg-sky-400/10' },
+                wisdom:       { bar: 'bg-violet-400',  text: 'text-violet-400',  bg: 'bg-violet-400/10' },
+                rest:         { bar: 'bg-emerald-400', text: 'text-emerald-400', bg: 'bg-emerald-400/10' },
+                perseverance: { bar: 'bg-orange-400',  text: 'text-orange-400',  bg: 'bg-orange-400/10' },
+                courage:      { bar: 'bg-rose-400',    text: 'text-rose-400',    bg: 'bg-rose-400/10' },
+                comfort:      { bar: 'bg-pink-400',    text: 'text-pink-400',    bg: 'bg-pink-400/10' },
+                joy:          { bar: 'bg-yellow-400',  text: 'text-yellow-400',  bg: 'bg-yellow-400/10' }
+              };
+              const youVersionPlans = {
+                hope:         { url: 'https://www.bible.com/es/reading-plans/26893', planName: 'Esperanza Inquebrantable' },
+                peace:        { url: 'https://www.bible.com/es/reading-plans/24016', planName: 'Paz en la Tormenta' },
+                wisdom:       { url: 'https://www.bible.com/es/reading-plans/20892', planName: 'Sabiduría de lo Alto' },
+                rest:         { url: 'https://www.bible.com/es/reading-plans/25498', planName: 'Descansa en Su Presencia' },
+                perseverance: { url: 'https://www.bible.com/es/reading-plans/22344', planName: 'No Te Rindas' },
+                courage:      { url: 'https://www.bible.com/es/reading-plans/21947', planName: 'Valentía para Avanzar' },
+                comfort:      { url: 'https://www.bible.com/es/reading-plans/23160', planName: 'Consuelo en Tiempos Difíciles' },
+                joy:          { url: 'https://www.bible.com/es/reading-plans/25670', planName: 'El Gozo del Señor' }
+              };
+              const container = document.getElementById('needs-distribution');
+              container.innerHTML = data.needDistribution.map(d => {
+                const c = colorMap[d.need] || { bar: 'bg-slate-400', text: 'text-slate-400', bg: 'bg-slate-400/10' };
+                const plan = youVersionPlans[d.need] || { url: 'https://www.bible.com/es/reading-plans', planName: 'Explorar Planes' };
+                return \`
+                  <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800 hover:border-slate-700 transition">
+                    <div class="flex justify-between items-center mb-2">
+                      <div class="flex items-center gap-3">
+                        <span class="text-base font-bold \${c.text}">\${d.label}</span>
+                        <span class="px-2 py-0.5 rounded-full text-xs font-semibold \${c.bg} \${c.text} border border-current/10">\${d.count} \${d.count === 1 ? 'vez' : 'veces'}</span>
+                      </div>
+                      <span class="text-2xl font-extrabold \${c.text}">\${d.percent}%</span>
+                    </div>
+                    <div class="w-full bg-slate-800 rounded-full h-2.5 mb-3">
+                      <div class="\${c.bar} h-2.5 rounded-full transition-all duration-700 ease-out" style="width: \${d.percent}%"></div>
+                    </div>
+                    <a href="\${plan.url}" target="_blank" rel="noopener noreferrer"
+                       class="inline-flex items-center gap-1.5 text-xs font-medium \${c.text} hover:underline transition">
+                      📖 Plan YouVersion: \${plan.planName} →
+                    </a>
+                  </div>
+                \`;
+              }).join('');
             }
           } catch(err) {
             console.error('Polling error:', err);
