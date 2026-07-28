@@ -15,6 +15,7 @@ const UI_TRANSLATIONS: Record<string, Record<string, string>> = {
     action: '🎯 MICRO-ACTION (60 SECONDS)',
     planLabel: '📲 RECOMMENDED DEVOTIONAL PLAN ON YOUVERSION',
     openPlan: '📖 Open Plan on YouVersion →',
+    openDashboard: '📊 Open Personal Dashboard →',
     confidence: 'Presence Platform • Confidence:',
     progressTitle: 'Presence Engine',
     progressMsg: 'Analyzing developer context via Gloo AI & YouVersion...',
@@ -32,6 +33,7 @@ const UI_TRANSLATIONS: Record<string, Record<string, string>> = {
     action: '⚡ MICRO-ACCIÓN BÍBLICA RECOMENDADA (60 SEG)',
     planLabel: '📲 PLAN DEVOCIONAL RECOMENDADO EN YOUVERSION',
     openPlan: '📖 Abrir Plan en YouVersion →',
+    openDashboard: '📊 Abrir Dashboard Personal →',
     confidence: 'Presence Platform • Confianza:',
     progressTitle: 'Motor Presence',
     progressMsg: 'Analizando contexto de desarrollo con Gloo AI y YouVersion...',
@@ -49,12 +51,13 @@ const UI_TRANSLATIONS: Record<string, Record<string, string>> = {
     action: '⚡ MICRO-AÇÃO BÍBLICA RECOMENDADA (60 SEG)',
     planLabel: '📲 PLANO DEVOCIONAL RECOMENDADO NO YOUVERSION',
     openPlan: '📖 Abrir Plano no YouVersion →',
+    openDashboard: '📊 Abrir Painel Pessoal →',
     confidence: 'Presence Platform • Confiança:',
     progressTitle: 'Motor Presence',
     progressMsg: 'Analisando contexto de desenvolvimento via Gloo AI e YouVersion...',
     discernedMsg: 'Presence: O Context Engine discerniu que você está em ritmo constante. Continue!',
     breakMsg: '$(clock) Presence: Pausa Recomendada',
-    activeMsg: '$(heart) Presence: Ativo',
+    activeMsg: '$(heart) Presence: Activo',
     tooltipMsg: 'Clique para uma pausa e reflexão espiritual'
   }
 };
@@ -146,7 +149,17 @@ export function activate(context: vscode.ExtensionContext) {
             'presenceReflection',
             `🕊️ ${exp.title}`,
             vscode.ViewColumn.Beside,
-            { enableScripts: false }
+            { enableScripts: true }
+          );
+
+          panel.webview.onDidReceiveMessage(
+            (message) => {
+              if (message.command === 'openDashboard') {
+                vscode.env.openExternal(vscode.Uri.parse('http://localhost:3000'));
+              }
+            },
+            undefined,
+            context.subscriptions
           );
 
           panel.webview.html = getReflectionWebviewHtml(exp, currentLang);
@@ -284,10 +297,32 @@ function getReflectionWebviewHtml(exp: any, lang: string = 'en'): string {
       font-weight: 500;
     }
     .footer {
-      text-align: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-top: 24px;
       font-size: 11px;
       color: #475569;
+    }
+    .btn-dash {
+      padding: 8px 16px;
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(99, 102, 241, 0.2));
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      font-weight: 700;
+      font-size: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-dash:hover {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.25), rgba(99, 102, 241, 0.35));
+      border-color: rgba(56, 189, 248, 0.6);
+      color: #ffffff;
+      transform: translateY(-1px);
     }
     .need-badge {
       display: inline-block;
@@ -343,17 +378,32 @@ function getReflectionWebviewHtml(exp: any, lang: string = 'en'): string {
       <div class="card-label" style="color: #fbbf24;">${t.planLabel}</div>
       <div style="font-size: 15px; font-weight: 700; color: #fef3c7; margin-bottom: 6px;">${escapeHtml(exp.youVersionPlan.title)}</div>
       ${exp.youVersionPlan.description ? `<div style="font-size: 13px; color: #cbd5e1; margin-bottom: 12px; line-height: 1.6;">${escapeHtml(exp.youVersionPlan.description)}</div>` : ''}
-      <a href="${escapeHtml(exp.youVersionPlan.url)}" target="_blank" style="display: inline-block; padding: 8px 16px; background: #f59e0b; color: #0f172a; font-weight: 700; font-size: 12px; border-radius: 8px; text-decoration: none;">
-        ${t.openPlan}
-      </a>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; align-items: center;">
+        <a href="${escapeHtml(exp.youVersionPlan.url)}" target="_blank" style="display: inline-block; padding: 8px 16px; background: #f59e0b; color: #0f172a; font-weight: 700; font-size: 12px; border-radius: 8px; text-decoration: none;">
+          ${t.openPlan}
+        </a>
+        <button class="btn-dash" onclick="openDashboard()">
+          ${t.openDashboard}
+        </button>
+      </div>
     </div>
     ` : ''}
 
     <div class="footer">
-      ${t.confidence} ${Math.round((exp.confidence || 0.9) * 100)}%
+      <span>${t.confidence} ${Math.round((exp.confidence || 0.9) * 100)}%</span>
+      <button class="btn-dash" onclick="openDashboard()" style="padding: 5px 12px; font-size: 11px;">
+        ${t.openDashboard}
+      </button>
     </div>
 
   </div>
+
+  <script>
+    const vscode = acquireVsCodeApi();
+    function openDashboard() {
+      vscode.postMessage({ command: 'openDashboard' });
+    }
+  </script>
 </body>
 </html>`;
 }
