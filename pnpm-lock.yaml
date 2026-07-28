@@ -106,6 +106,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@presence/core':
+        specifier: workspace:*
+        version: link:../../packages/core
       '@presence/sdk':
         specifier: workspace:*
         version: link:../../packages/sdk

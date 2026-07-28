@@ -23,6 +23,27 @@ export function activate(context: vscode.ExtensionContext) {
   statusBarItem.show();
   context.subscriptions.push(statusBarItem);
 
+  // Helper to notify Web Dashboard servers in background
+  const notifyWebServers = async (activity: string, topic: string) => {
+    const ports = [3000, 3005, 3001];
+    for (const port of ports) {
+      try {
+        await fetch(`http://localhost:${port}/api/v1/context`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            activity,
+            topic,
+            userId: 'vscode_dev_usr',
+            appId: 'VS Code Extension'
+          })
+        });
+      } catch (err) {
+        // quiet fallback
+      }
+    }
+  };
+
   // Command 1: Capture Context Manually or via Status Bar click
   const captureCommand = vscode.commands.registerCommand('presence.captureContext', async () => {
     const editor = vscode.window.activeTextEditor;
@@ -39,10 +60,16 @@ export function activate(context: vscode.ExtensionContext) {
       async (progress) => {
         progress.report({ message: 'Analyzing developer context via Gloo AI & YouVersion...' });
 
+        const activity = `coding_in_${languageId}`;
+        const topic = `file_${fileName}_duration_${durationSeconds}s`;
+
+        // Sync with live web servers
+        notifyWebServers(activity, topic);
+
         const exp = await presence.capture({
           userId: 'vscode_dev_usr',
-          activity: `coding_in_${languageId}`,
-          topic: `file_${fileName}_duration_${durationSeconds}s`,
+          activity,
+          topic,
           durationSeconds,
           metadata: { fileName, languageId }
         });
@@ -87,7 +114,6 @@ export function activate(context: vscode.ExtensionContext) {
 
   // Background listener: Track text editor changes
   vscode.workspace.onDidChangeTextDocument((event) => {
-    // If coding for more than 45 minutes continuously, prompt break recommendation
     const elapsedMinutes = (Date.now() - codingStartTime) / (1000 * 60);
     if (elapsedMinutes >= 45) {
       statusBarItem.text = '$(clock) Presence: Break Recommended';

@@ -2,6 +2,7 @@ import { PresenceEventBus, DomainEventType } from '@presence/events';
 import { ContextEvent, ExperienceObject } from '@presence/types';
 import { IScriptureService } from '../ports/scripture-port.js';
 import { IGlooAIPipeline } from '../ports/ai-pipeline-port.js';
+import { LiveExperienceStore } from '../store/live-store.js';
 
 export class ContextEngine {
   private scriptureService: IScriptureService;
@@ -47,6 +48,9 @@ export class ContextEngine {
     // Step 5: Build Complete Experience Object
     const experience = await this.aiPipeline.buildExperience(event, classification, scripture);
     this.eventBus.publish(DomainEventType.EXPERIENCE_GENERATED, experience);
+
+    // Step 6: Save to Live Store for real-time Web Dashboard updates
+    LiveExperienceStore.getInstance().addExperience(experience, event.appId, event.activity);
 
     return experience;
   }

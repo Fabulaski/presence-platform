@@ -1,16 +1,19 @@
+import { LiveExperienceStore, LiveStoreItem } from '@presence/core';
+
 export function renderDashboardSummary() {
+  const store = LiveExperienceStore.getInstance();
+  const metrics = store.getMetrics();
+  const experiences = store.getExperiences();
+
   return {
-    metrics: {
-      experiencesToday: 1245,
-      avgInterventionTimeMs: 420,
-      shareRatePercent: 18.4,
-      savedRatePercent: 35.2,
-      dominantTheme: 'Esperanza (48%)'
-    },
-    recentEvents: [
-      { id: 'evt_101', app: 'Presence Creator', activity: 'editing_reel', topic: 'creative_block', status: 'Intervenido', verse: 'Romanos 15:13' },
-      { id: 'evt_102', app: 'Presence Radio', activity: 'listening_stream', topic: 'anxiety', status: 'Intervenido', verse: 'Filipenses 4:6-7' },
-      { id: 'evt_103', app: 'Presence Dev', activity: 'coding', topic: 'weariness', status: 'Discernido (No Intervenir)', verse: '-' }
-    ]
+    metrics,
+    recentEvents: experiences.map((exp: LiveStoreItem) => ({
+      id: exp.id,
+      app: exp.appName || 'Presence Platform App',
+      activity: exp.activity || exp.need,
+      topic: exp.need,
+      status: 'Intervenido',
+      verse: exp.scripture.reference
+    }))
   };
 }
