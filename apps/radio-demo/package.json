@@ -1,0 +1,17 @@
+{
+  "name": "@presence/radio-demo",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "node ./dist/index.js",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@presence/sdk": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "@presence/events",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@presence/types": "workspace:*",
+    "eventemitter2": "^6.4.9"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}

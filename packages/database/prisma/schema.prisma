@@ -1,0 +1,176 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  language  String   @default("es")
+  country   String   @default("CO")
+  timezone  String   @default("UTC-5")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  profile  Profile?
+  sessions Session[]
+  journeys Journey[]
+  apps     App[]
+
+  @@map("users")
+}
+
+model Profile {
+  id                   String   @id @default(uuid())
+  userId               String   @unique @map("user_id")
+  displayName          String   @map("display_name")
+  avatarUrl            String?  @map("avatar_url")
+  preferredTranslation String   @default("NVI") @map("preferred_translation")
+  consentGiven         Boolean  @default(true) @map("consent_given")
+  createdAt            DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("profiles")
+}
+
+model App {
+  id        String   @id @default(uuid())
+  name      String
+  platform  String   // creator, radio, dev, widget, custom
+  apiKey    String   @unique @map("api_key")
+  status    String   @default("active") // active, suspended, revoked
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user     User      @relation(fields: [userId], references: [id])
+  sessions Session[]
+
+  @@map("apps")
+}
+
+model Session {
+  id        String    @id @default(uuid())
+  userId    String    @map("user_id")
+  appId     String    @map("app_id")
+  startedAt DateTime  @default(now()) @map("started_at")
+  endedAt   DateTime? @map("ended_at")
+
+  user          User           @relation(fields: [userId], references: [id])
+  app           App            @relation(fields: [appId], references: [id])
+  contextEvents ContextEvent[]
+
+  @@map("sessions")
+}
+
+model ContextEvent {
+  id              String   @id @default(uuid())
+  sessionId       String   @map("session_id")
+  activity        String
+  topic           String?
+  contextType     String?  @map("context_type")
+  confidence      Float    @default(0.85)
+  metadata        Json?
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  session         Session          @relation(fields: [sessionId], references: [id])
+  spiritualMoment SpiritualMoment?
+
+  @@map("context_events")
+}
+
+model SpiritualMoment {
+  id             String   @id @default(uuid())
+  contextEventId String   @unique @map("context_event_id")
+  need           String
+  theme          String
+  urgency        String   @default("medium")
+  confidence     Float    @default(0.85)
+  status         String   @default("detected")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  contextEvent     ContextEvent       @relation(fields: [contextEventId], references: [id])
+  scriptureMatches ScriptureMatch[]
+  experiences      Experience[]
+
+  @@map("spiritual_moments")
+}
+
+model ScriptureMatch {
+  id                String   @id @default(uuid())
+  spiritualMomentId String   @map("spiritual_moment_id")
+  reference         String
+  text              String
+  translation       String   @default("NVI")
+  language          String   @default("es")
+  confidence        Float    @default(0.9)
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  spiritualMoment SpiritualMoment @relation(fields: [spiritualMomentId], references: [id])
+
+  @@map("scripture_matches")
+}
+
+model Experience {
+  id                String   @id @default(uuid())
+  spiritualMomentId String   @map("spiritual_moment_id")
+  title             String
+  reflection        String
+  prayer            String
+  action            String
+  shareText         String   @map("share_text")
+  status            String   @default("published")
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  spiritualMoment SpiritualMoment  @relation(fields: [spiritualMomentId], references: [id])
+  journeyHistory  JourneyHistory[]
+  analytics       Analytics[]
+
+  @@map("experiences")
+}
+
+model Journey {
+  id           String   @id @default(uuid())
+  userId       String   @map("user_id")
+  currentTheme String   @map("current_theme")
+  stage        String   @default("initial")
+  lastActivity DateTime @default(now()) @map("last_activity")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  user           User             @relation(fields: [userId], references: [id])
+  journeyHistory JourneyHistory[]
+
+  @@map("journeys")
+}
+
+model JourneyHistory {
+  id           String   @id @default(uuid())
+  journeyId    String   @map("journey_id")
+  experienceId String   @map("experience_id")
+  theme        String
+  progress     Float    @default(0.1)
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  journey    Journey    @relation(fields: [journeyId], references: [id])
+  experience Experience @relation(fields: [experienceId], references: [id])
+
+  @@map("journey_history")
+}
+
+model Analytics {
+  id           String   @id @default(uuid())
+  experienceId String   @map("experience_id")
+  opened       Boolean  @default(false)
+  saved        Boolean  @default(false)
+  shared       Boolean  @default(false)
+  dismissed    Boolean  @default(false)
+  completed    Boolean  @default(false)
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  experience Experience @relation(fields: [experienceId], references: [id])
+
+  @@map("analytics")
+}

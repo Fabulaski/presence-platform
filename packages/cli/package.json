@@ -1,0 +1,22 @@
+{
+  "name": "@presence/cli",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "bin": {
+    "presence": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@presence/sdk": "workspace:*",
+    "@presence/types": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.7",
+    "typescript": "^5.4.5"
+  }
+}

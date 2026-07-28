@@ -1,0 +1,60 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Presence Platform API",
+    "version": "1.0.0",
+    "description": "Enterprise API for Contextual Scripture & Spiritual Experience Integration"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3001/api/v1",
+      "description": "Local Development Server"
+    }
+  ],
+  "paths": {
+    "/context": {
+      "post": {
+        "summary": "Capture Context Event",
+        "description": "Ingests a user context event, processes it through Gloo AI agents, and returns a tailored spiritual experience.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "activity": { "type": "string" },
+                  "topic": { "type": "string" },
+                  "userId": { "type": "string" },
+                  "platform": { "type": "string" }
+                },
+                "required": ["activity"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Experience generated or null if discerns not to intervene"
+          }
+        }
+      }
+    },
+    "/experiences/daily": {
+      "get": {
+        "summary": "Get Daily Scripture & Reflection",
+        "responses": {
+          "200": { "description": "Returns daily featured experience" }
+        }
+      }
+    },
+    "/journey": {
+      "get": {
+        "summary": "Get User Spiritual Growth Journey",
+        "responses": {
+          "200": { "description": "Returns user spiritual journey chapters" }
+        }
+      }
+    }
+  }
+}
