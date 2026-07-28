@@ -72,15 +72,71 @@ const FALLBACK_TEMPLATES_EN: Record<SpiritualNeed, Array<{ title: string; reflec
   ]
 };
 
-// ─── OpenAI-Powered AI Pipeline Adapter ────────────────────────────────────
+// ─── Gloo AI Platform-Powered AI Pipeline Adapter ──────────────────────────
 export class GlooAIPipelineAdapter implements IGlooAIPipeline {
+  private glooClientId: string;
+  private glooClientSecret: string;
+  private glooTokenUrl: string;
+  private glooEndpoint: string;
+  private glooModel: string;
+
+  private cachedAccessToken: string | null = null;
+  private tokenExpiryTime: number = 0;
+
   private openaiKey: string;
   private openaiModel: string;
   private openaiEndpoint = 'https://api.openai.com/v1/chat/completions';
 
-  constructor(apiKey?: string) {
-    this.openaiKey = apiKey || process.env.OPENAI_API_KEY || '';
+  constructor(clientId?: string, clientSecret?: string) {
+    this.glooClientId = clientId || process.env.GLOO_CLIENT_ID || '2jhf906bcnngiugsengi7v6nnq';
+    this.glooClientSecret = clientSecret || process.env.GLOO_CLIENT_SECRET || '6amjvb3vuo3lboeq1lhmrh5utbiqob4n8v9t5h60fmglqujgvrs';
+    this.glooTokenUrl = process.env.GLOO_TOKEN_URL || 'https://platform.ai.gloo.com/oauth2/token';
+    this.glooEndpoint = process.env.GLOO_ENDPOINT || 'https://platform.ai.gloo.com/ai/v1/chat/completions';
+    this.glooModel = process.env.GLOO_MODEL || 'gloo-qwen-3.7-max';
+
+    this.openaiKey = process.env.OPENAI_API_KEY || '';
     this.openaiModel = process.env.OPENAI_MODEL || 'gpt-4o-mini';
+  }
+
+  /** Retrieve or refresh OAuth2 Access Token from Gloo AI Platform */
+  private async getGlooAccessToken(): Promise<string | null> {
+    if (this.cachedAccessToken && Date.now() < this.tokenExpiryTime - 60000) {
+      return this.cachedAccessToken;
+    }
+
+    if (!this.glooClientId || !this.glooClientSecret) {
+      return null;
+    }
+
+    try {
+      const basicAuth = Buffer.from(`${this.glooClientId}:${this.glooClientSecret}`).toString('base64');
+      const response = await fetch(this.glooTokenUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Basic ${basicAuth}`,
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: 'grant_type=client_credentials&scope=api/access'
+      });
+
+      if (response.ok) {
+        const data = (await response.json()) as any;
+        if (data && data.access_token) {
+          this.cachedAccessToken = data.access_token;
+          const expiresInSeconds = data.expires_in || 3600;
+          this.tokenExpiryTime = Date.now() + expiresInSeconds * 1000;
+          console.log('[Gloo AI OAuth2] ✅ Token obtained successfully (expires in ' + expiresInSeconds + 's)');
+          return this.cachedAccessToken;
+        }
+      } else {
+        const errText = await response.text().catch(() => '');
+        console.warn(`[Gloo AI OAuth2] Token error HTTP ${response.status}: ${errText.substring(0, 200)}`);
+      }
+    } catch (err: any) {
+      console.warn(`[Gloo AI OAuth2] Exception during token fetch: ${err.message}`);
+    }
+
+    return null;
   }
 
   /** Clean raw topic strings into human-readable module names */
@@ -91,42 +147,81 @@ export class GlooAIPipelineAdapter implements IGlooAIPipeline {
     return rawTopic.replace(/duration_\d+s?/g, '').replace(/[_-]/g, ' ').trim() || 'this project';
   }
 
-  /** Make a request to OpenAI Chat Completions API */
-  private async callOpenAI(systemPrompt: string, userPrompt: string): Promise<any | null> {
-    if (!this.openaiKey) return null;
+  /** Make a request to Gloo AI Platform API (with OpenAI fallback) */
+  private async callGlooAI(systemPrompt: string, userPrompt: string): Promise<any | null> {
+    const accessToken = await this.getGlooAccessToken();
 
-    try {
-      const response = await fetch(this.openaiEndpoint, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.openaiKey}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          model: this.openaiModel,
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: userPrompt }
-          ],
-          temperature: 0.9,
-          max_tokens: 500,
-          response_format: { type: 'json_object' }
-        })
-      });
+    if (accessToken) {
+      try {
+        console.log(`[Gloo AI Engine] Requesting model: "${this.glooModel}"`);
+        const response = await fetch(this.glooEndpoint, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: this.glooModel,
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userPrompt }
+            ],
+            temperature: 0.9,
+            max_tokens: 500,
+            response_format: { type: 'json_object' }
+          })
+        });
 
-      if (response.ok) {
-        const data = (await response.json()) as any;
-        const content = data.choices?.[0]?.message?.content;
-        if (content) {
-          return JSON.parse(content);
+        if (response.ok) {
+          const data = (await response.json()) as any;
+          const content = data.choices?.[0]?.message?.content;
+          if (content) {
+            console.log(`[Gloo AI Engine] ✅ Model output received from ${this.glooModel}`);
+            return JSON.parse(content);
+          }
+        } else {
+          const errorBody = await response.text().catch(() => '');
+          console.warn(`[Gloo AI Engine] HTTP ${response.status}: ${errorBody.substring(0, 200)}`);
         }
-      } else {
-        const errorBody = await response.text().catch(() => '');
-        console.warn(`[OpenAI API] HTTP ${response.status}: ${errorBody.substring(0, 200)}`);
+      } catch (err: any) {
+        console.warn(`[Gloo AI Engine] Error calling Gloo API: ${err.message}`);
       }
-    } catch (err: any) {
-      console.warn(`[OpenAI API] Error: ${err.message}`);
     }
+
+    // ── Fallback to OpenAI Chat Completions API ──────────────────────────
+    if (this.openaiKey) {
+      try {
+        console.log(`[OpenAI Fallback] Requesting model: "${this.openaiModel}"`);
+        const response = await fetch(this.openaiEndpoint, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${this.openaiKey}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: this.openaiModel,
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userPrompt }
+            ],
+            temperature: 0.9,
+            max_tokens: 500,
+            response_format: { type: 'json_object' }
+          })
+        });
+
+        if (response.ok) {
+          const data = (await response.json()) as any;
+          const content = data.choices?.[0]?.message?.content;
+          if (content) {
+            return JSON.parse(content);
+          }
+        }
+      } catch (err: any) {
+        console.warn(`[OpenAI Fallback] Error: ${err.message}`);
+      }
+    }
+
     return null;
   }
 
@@ -158,7 +253,7 @@ Analyze the user activity and return JSON:
 
     const userPrompt = `Activity: "${event.activity}", File/Topic: "${event.topic || 'none'}", Platform: "${event.platform}", Duration: ${event.durationSeconds || 0}s, Language: ${lang}`;
 
-    const parsed = await this.callOpenAI(systemPrompt, userPrompt);
+    const parsed = await this.callGlooAI(systemPrompt, userPrompt);
 
     if (parsed && parsed.primaryNeed) {
       console.log(`[OpenAI] ✅ GPT Classification (${lang}): ${parsed.contextType} → ${parsed.primaryNeed}`);
@@ -266,7 +361,7 @@ Módulo activo del desarrollador: ${topicClean}
 Idioma objetivo: ESPAÑOL
 Hora local: ${new Date().getHours()}:${String(new Date().getMinutes()).padStart(2, '0')}`;
 
-    const parsed = await this.callOpenAI(systemPrompt, userPrompt);
+    const parsed = await this.callGlooAI(systemPrompt, userPrompt);
 
     if (parsed && parsed.reflection) {
       console.log(`[OpenAI] ✅ GPT Reflection generated (${lang}): "${parsed.title}"`);
