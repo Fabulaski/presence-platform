@@ -378,14 +378,9 @@ function getReflectionWebviewHtml(exp: any, lang: string = 'en'): string {
       <div class="card-label" style="color: #fbbf24;">${t.planLabel}</div>
       <div style="font-size: 15px; font-weight: 700; color: #fef3c7; margin-bottom: 6px;">${escapeHtml(exp.youVersionPlan.title)}</div>
       ${exp.youVersionPlan.description ? `<div style="font-size: 13px; color: #cbd5e1; margin-bottom: 12px; line-height: 1.6;">${escapeHtml(exp.youVersionPlan.description)}</div>` : ''}
-      <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; align-items: center;">
-        <a href="${escapeHtml(exp.youVersionPlan.url)}" target="_blank" style="display: inline-block; padding: 8px 16px; background: #f59e0b; color: #0f172a; font-weight: 700; font-size: 12px; border-radius: 8px; text-decoration: none;">
-          ${t.openPlan}
-        </a>
-        <button class="btn-dash" onclick="openDashboard()">
-          ${t.openDashboard}
-        </button>
-      </div>
+      <a href="${escapeHtml(exp.youVersionPlan.url)}" target="_blank" style="display: inline-block; padding: 8px 16px; background: #f59e0b; color: #0f172a; font-weight: 700; font-size: 12px; border-radius: 8px; text-decoration: none;">
+        ${t.openPlan}
+      </a>
     </div>
     ` : ''}
 
