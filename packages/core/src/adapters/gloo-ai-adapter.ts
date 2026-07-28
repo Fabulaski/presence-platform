@@ -92,7 +92,7 @@ export class GlooAIPipelineAdapter implements IGlooAIPipeline {
     this.glooClientSecret = clientSecret || process.env.GLOO_CLIENT_SECRET || '6amjvb3vuo3lboeq1lhmrh5utbiqob4n8v9t5h60fmglqujgvrs';
     this.glooTokenUrl = process.env.GLOO_TOKEN_URL || 'https://platform.ai.gloo.com/oauth2/token';
     this.glooEndpoint = process.env.GLOO_ENDPOINT || 'https://platform.ai.gloo.com/ai/v1/chat/completions';
-    this.glooModel = process.env.GLOO_MODEL || 'gloo-qwen-3.7-flash';
+    this.glooModel = process.env.GLOO_MODEL || 'gloo-openai-gpt-4.1-mini';
 
     this.openaiKey = process.env.OPENAI_API_KEY || '';
     this.openaiModel = process.env.OPENAI_MODEL || 'gpt-4o-mini';

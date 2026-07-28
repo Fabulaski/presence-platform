@@ -44,26 +44,33 @@ export class ContextEngine {
       urgency: classification.urgency
     });
 
-    // Step 4: Fetch Scripture and Devotional Plan via YouVersion Service Port
+    // Step 4: Fetch Scripture, Devotional Plan, and AI Experience in parallel for ultra-fast response
     const lang = event.language || 'es';
-    const scripture = await this.scriptureService.findScriptureForNeed({
+
+    const scripturePromise = this.scriptureService.findScriptureForNeed({
       need: classification.primaryNeed,
       topic: event.topic,
       language: lang
     });
-    this.eventBus.publish(DomainEventType.SCRIPTURE_MATCHED, {
-      momentId: `mom_${event.id}`,
-      reference: scripture.reference
-    });
 
-    const youVersionPlan = await this.scriptureService.getReadingPlanForNeed(
+    const planPromise = this.scriptureService.getReadingPlanForNeed(
       classification.primaryNeed,
       event.topic,
       lang
     );
 
-    // Step 5: Build Complete Experience Object (pass language for i18n)
-    const experience = await this.aiPipeline.buildExperience(event, classification, scripture);
+    const scripture = await scripturePromise;
+
+    this.eventBus.publish(DomainEventType.SCRIPTURE_MATCHED, {
+      momentId: `mom_${event.id}`,
+      reference: scripture.reference
+    });
+
+    const [youVersionPlan, experience] = await Promise.all([
+      planPromise,
+      this.aiPipeline.buildExperience(event, classification, scripture)
+    ]);
+
     experience.youVersionPlan = youVersionPlan;
     
     this.eventBus.publish(DomainEventType.EXPERIENCE_GENERATED, experience);
