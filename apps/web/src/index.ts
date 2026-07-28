@@ -39,6 +39,24 @@ app.post('/api/v1/context', async (req: Request, res: Response) => {
   }
 });
 
+// API endpoint to receive a COMPLETE pre-generated experience from VS Code / clients
+// This guarantees the exact same verse/reflection/prayer shown in the extension
+// appears on the dashboard — no re-generation, perfect synchronization.
+app.post('/api/v1/experience', (req: Request, res: Response) => {
+  try {
+    const { experience, activity, appId } = req.body;
+    if (experience && experience.scripture) {
+      LiveExperienceStore.getInstance().addExperience(experience, appId || 'VS Code Extension', activity || 'coding');
+      console.log(`[Presence Web] ✅ Synced experience from ${appId}: "${experience.title}" — ${experience.scripture.reference}`);
+      res.json({ success: true, synced: true });
+    } else {
+      res.status(400).json({ error: 'Missing experience data' });
+    }
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // API endpoint for live stream polling
 app.get('/api/v1/live-stream', (req: Request, res: Response) => {
   const store = LiveExperienceStore.getInstance();
