@@ -54,7 +54,7 @@ Presence se rige por **3 Principios Fundamentales**:
                  │                             │
                  ▼                             ▼
 ┌──────────────────────────────┐ ┌──────────────────────────────┐
-│  YouVersion Scripture Port   │ │   Gloo AI Multi-Agent Port   │
+│  YouVersion Scripture Port   │ │   OpenAI GPT Engine Port     │
 │  (YouVersionScriptureAdapter)│ │   (GlooAIPipelineAdapter)    │
 └──────────────────────────────┘ └──────────────────────────────┘
                                 │
@@ -83,7 +83,7 @@ presence-platform/
 ├── packages/
 │   ├── types/             # Value Objects, DTOs y Agregados DDD
 │   ├── events/            # Event Bus asíncrono (PresenceEventBus)
-│   ├── core/              # Context Engine Hexagonal, LiveStore + Puertos YouVersion & Gloo AI
+│   ├── core/              # Context Engine Hexagonal, LiveStore + Puertos YouVersion & OpenAI GPT
 │   ├── sdk/               # SDK oficial cliente en TypeScript
 │   ├── database/          # Prisma Schema (11 tablas relacionales) & cliente Supabase
 │   └── cli/               # Herramienta CLI de integración (presence-cli / npx presence)
@@ -138,10 +138,10 @@ code --install-extension apps/vscode-extension/presence-vscode-extension-1.0.0.v
 
 ---
 
-## 🔌 Integración en Vivo con YouVersion & Gloo AI
+## 🔌 Integración en Vivo con YouVersion & OpenAI GPT
 
 - **YouVersion Platform API**: Conexión REST mediante `YOUVERSION_API_KEY` para consultas bíblicas en `NVI`, `RVR1960` y `NIV`, junto con un catálogo dinámico enriquecido.
-- **Gloo AI Multi-Agent Gateway**: Pipeline coordinado de 5 agentes (`Context`, `Need`, `Scripture`, `Reflection`, `Journey`) con generación dinámica de títulos, reflexiones adaptadas al código, oraciones y micro-acciones de 60 segundos.
+- **OpenAI GPT Engine** (`gpt-4o-mini`): Motor de inteligencia artificial real que genera clasificación contextual, reflexiones espirituales únicas, oraciones personalizadas y micro-acciones de 60 segundos adaptadas al archivo en desarrollo, la necesidad espiritual detectada, el versículo bíblico y la hora del día. Incluye fallback inteligente a plantillas locales si la API no está disponible.
 
 ---
 
