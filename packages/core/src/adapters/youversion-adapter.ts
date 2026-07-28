@@ -242,6 +242,197 @@ const SCRIPTURE_CATALOG: Record<SpiritualNeed, ScriptureMatch[]> = {
   ]
 };
 
+const SCRIPTURE_CATALOG_EN: Record<SpiritualNeed, ScriptureMatch[]> = {
+  hope: [
+    {
+      reference: 'Romans 15:13',
+      text: 'May the God of hope fill you with all joy and peace as you trust in him, so that you may overflow with hope by the power of the Holy Spirit.',
+      translation: 'NIV',
+      book: 'Romans',
+      chapter: 15,
+      verseStart: 13
+    },
+    {
+      reference: 'Jeremiah 29:11',
+      text: 'For I know the plans I have for you, declares the LORD, plans to prosper you and not to harm you, plans to give you hope and a future.',
+      translation: 'NIV',
+      book: 'Jeremiah',
+      chapter: 29,
+      verseStart: 11
+    },
+    {
+      reference: 'Isaiah 40:31',
+      text: 'But those who hope in the LORD will renew their strength. They will soar on wings like eagles; they will run and not grow weary, they will walk and not be faint.',
+      translation: 'NIV',
+      book: 'Isaiah',
+      chapter: 40,
+      verseStart: 31
+    }
+  ],
+  peace: [
+    {
+      reference: 'Philippians 4:6-7',
+      text: 'Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God. And the peace of God, which transcends all understanding, will guard your hearts and your minds in Christ Jesus.',
+      translation: 'NIV',
+      book: 'Philippians',
+      chapter: 4,
+      verseStart: 6,
+      verseEnd: 7
+    },
+    {
+      reference: 'John 14:27',
+      text: 'Peace I leave with you; my peace I give you. I do not give to you as the world gives. Do not let your hearts be troubled and do not be afraid.',
+      translation: 'NIV',
+      book: 'John',
+      chapter: 14,
+      verseStart: 27
+    },
+    {
+      reference: 'Isaiah 26:3',
+      text: 'You will keep in perfect peace those whose minds are steadfast, because they trust in you.',
+      translation: 'NIV',
+      book: 'Isaiah',
+      chapter: 26,
+      verseStart: 3
+    },
+    {
+      reference: 'Psalms 4:8',
+      text: 'In peace I will lie down and sleep, for you alone, LORD, make me dwell in safety.',
+      translation: 'NIV',
+      book: 'Psalms',
+      chapter: 4,
+      verseStart: 8
+    }
+  ],
+  perseverance: [
+    {
+      reference: 'Galatians 6:9',
+      text: 'Let us not become weary in doing good, for at the proper time we will reap a harvest if we do not give up.',
+      translation: 'NIV',
+      book: 'Galatians',
+      chapter: 6,
+      verseStart: 9
+    },
+    {
+      reference: 'Hebrews 12:1-2',
+      text: 'Let us run with perseverance the race marked out for us, fixing our eyes on Jesus, the pioneer and perfecter of faith.',
+      translation: 'NIV',
+      book: 'Hebrews',
+      chapter: 12,
+      verseStart: 1,
+      verseEnd: 2
+    },
+    {
+      reference: 'James 1:12',
+      text: 'Blessed is the one who perseveres under trial because, having stood the test, that person will receive the crown of life.',
+      translation: 'NIV',
+      book: 'James',
+      chapter: 1,
+      verseStart: 12
+    }
+  ],
+  wisdom: [
+    {
+      reference: 'James 1:5',
+      text: 'If any of you lacks wisdom, you should ask God, who gives generously to all without finding fault, and it will be given to you.',
+      translation: 'NIV',
+      book: 'James',
+      chapter: 1,
+      verseStart: 5
+    },
+    {
+      reference: 'Proverbs 3:5-6',
+      text: 'Trust in the LORD with all your heart and lean not on your own understanding; in all your ways submit to him, and he will make your paths straight.',
+      translation: 'NIV',
+      book: 'Proverbs',
+      chapter: 3,
+      verseStart: 5,
+      verseEnd: 6
+    },
+    {
+      reference: 'Proverbs 2:6',
+      text: 'For the LORD gives wisdom; from his mouth come knowledge and understanding.',
+      translation: 'NIV',
+      book: 'Proverbs',
+      chapter: 2,
+      verseStart: 6
+    }
+  ],
+  comfort: [
+    {
+      reference: '2 Corinthians 1:3-4',
+      text: 'Praise be to the God and Father of our Lord Jesus Christ, the Father of compassion and the God of all comfort, who comforts us in all our troubles.',
+      translation: 'NIV',
+      book: '2 Corinthians',
+      chapter: 1,
+      verseStart: 3,
+      verseEnd: 4
+    },
+    {
+      reference: 'Psalms 23:4',
+      text: 'Even though I walk through the darkest valley, I will fear no evil, for you are with me; your rod and your staff, they comfort me.',
+      translation: 'NIV',
+      book: 'Psalms',
+      chapter: 23,
+      verseStart: 4
+    }
+  ],
+  joy: [
+    {
+      reference: 'Psalms 118:24',
+      text: 'This is the day the LORD has made; let us rejoice and be glad in it.',
+      translation: 'NIV',
+      book: 'Psalms',
+      chapter: 118,
+      verseStart: 24
+    },
+    {
+      reference: 'Philippians 4:4',
+      text: 'Rejoice in the Lord always. I will say it again: Rejoice!',
+      translation: 'NIV',
+      book: 'Philippians',
+      chapter: 4,
+      verseStart: 4
+    }
+  ],
+  courage: [
+    {
+      reference: 'Joshua 1:9',
+      text: 'Have I not commanded you? Be strong and courageous. Do not be afraid; do not be discouraged, for the LORD your God will be with you wherever you go.',
+      translation: 'NIV',
+      book: 'Joshua',
+      chapter: 1,
+      verseStart: 9
+    },
+    {
+      reference: 'Isaiah 41:10',
+      text: 'So do not fear, for I am with you; do not be dismayed, for I am your God. I will strengthen you and help you; I will uphold you with my righteous right hand.',
+      translation: 'NIV',
+      book: 'Isaiah',
+      chapter: 41,
+      verseStart: 10
+    }
+  ],
+  rest: [
+    {
+      reference: 'Matthew 11:28',
+      text: 'Come to me, all you who are weary and burdened, and I will give you rest.',
+      translation: 'NIV',
+      book: 'Matthew',
+      chapter: 11,
+      verseStart: 28
+    },
+    {
+      reference: 'Psalms 62:1',
+      text: 'Truly my soul finds rest in God; my salvation comes from him.',
+      translation: 'NIV',
+      book: 'Psalms',
+      chapter: 62,
+      verseStart: 1
+    }
+  ]
+};
+
 export class YouVersionScriptureAdapter implements IScriptureService {
   private apiKey: string;
   private endpointUrl: string;
@@ -252,10 +443,11 @@ export class YouVersionScriptureAdapter implements IScriptureService {
   }
 
   public async findScriptureForNeed(query: ScriptureSearchQuery): Promise<ScriptureMatch> {
+    const lang = query.language || 'es';
     if (this.apiKey) {
       try {
-        console.log(`[YouVersion API] Fetching live passage with developer token for need: "${query.need}"`);
-        const response = await fetch(`${this.endpointUrl}/passages/search?query=${encodeURIComponent(query.need)}&language=${query.language || 'es'}`, {
+        console.log(`[YouVersion API] Fetching live passage with developer token for need: "${query.need}" in language: "${lang}"`);
+        const response = await fetch(`${this.endpointUrl}/passages/search?query=${encodeURIComponent(query.need)}&language=${lang}`, {
           headers: {
             'X-YouVersion-Developer-Token': this.apiKey,
             'Accept': 'application/json'
@@ -268,8 +460,8 @@ export class YouVersionScriptureAdapter implements IScriptureService {
             return {
               reference: data.reference,
               text: data.text,
-              translation: query.translation || 'NVI',
-              book: data.book || 'Biblia',
+              translation: query.translation || (lang === 'en' ? 'NIV' : 'NVI'),
+              book: data.book || (lang === 'en' ? 'Bible' : 'Biblia'),
               chapter: data.chapter || 1,
               verseStart: data.verseStart || 1
             };
@@ -280,7 +472,8 @@ export class YouVersionScriptureAdapter implements IScriptureService {
       }
     }
 
-    const matches = SCRIPTURE_CATALOG[query.need] || SCRIPTURE_CATALOG.hope;
+    const catalog = lang === 'en' ? SCRIPTURE_CATALOG_EN : SCRIPTURE_CATALOG;
+    const matches = catalog[query.need] || catalog.hope;
     const randomIndex = Math.floor(Math.random() * matches.length);
     return matches[randomIndex];
   }
@@ -415,23 +608,23 @@ const YOUVERSION_PLANS_I18N: Record<string, NeedPlans> = {
     ],
     peace: [
       { title: 'Peace in the Storm', url: 'https://www.bible.com/{locale}/reading-plans/24016', description: 'Find calm and mental serenity when pressure and anxiety try to overwhelm you.' },
-      { title: 'Overcoming Anxiety and Stress', url: 'https://www.bible.com/{locale}/reading-plans/18932', description: 'Practical biblical tools to guard your mind in complete peace.' }
+      { title: 'Overcoming Anxiety and Stress', url: 'https://www.bible.com/{locale}/reading-plans/17578', description: 'Practical biblical tools to guard your mind in complete peace.' }
     ],
     wisdom: [
       { title: 'Wisdom from Above', url: 'https://www.bible.com/{locale}/reading-plans/20892', description: 'Divine light and direction to make wise decisions and structure complex solutions.' },
-      { title: 'Proverbs: Discernment for Life', url: 'https://www.bible.com/{locale}/reading-plans/15600', description: 'Eternal principles to solve daily challenges with clarity and order.' }
+      { title: 'Proverbs: Discernment for Life', url: 'https://www.bible.com/{locale}/reading-plans/20892', description: 'Eternal principles to solve daily challenges with clarity and order.' }
     ],
     rest: [
       { title: 'Rest in His Presence', url: 'https://www.bible.com/{locale}/reading-plans/25498', description: 'A call to pause, release mental exhaustion and renew your strength in God.' },
-      { title: 'The Art of Pausing and Renewal', url: 'https://www.bible.com/{locale}/reading-plans/17840', description: 'Learn to rest physically and mentally without guilt.' }
+      { title: 'The Art of Pausing and Renewal', url: 'https://www.bible.com/{locale}/reading-plans/25498', description: 'Learn to rest physically and mentally without guilt.' }
     ],
     perseverance: [
       { title: "Don't Give Up: Firmness to the End", url: 'https://www.bible.com/{locale}/reading-plans/22344', description: 'Spiritual strength to keep building and not faint under weariness.' },
-      { title: 'Perseverance and Victory', url: 'https://www.bible.com/{locale}/reading-plans/19410', description: 'Persevere in the race of life with your gaze fixed on purpose.' }
+      { title: 'Perseverance and Victory', url: 'https://www.bible.com/{locale}/reading-plans/22344', description: 'Persevere in the race of life with your gaze fixed on purpose.' }
     ],
     courage: [
       { title: 'Courage to Move Forward', url: 'https://www.bible.com/{locale}/reading-plans/21947', description: 'Overcome the fear of failure and make bold decisions to innovate and create.' },
-      { title: 'Fearless in the Challenge', url: 'https://www.bible.com/{locale}/reading-plans/16720', description: 'Develop a spirit of power, love and self-control in the face of the unknown.' }
+      { title: 'Fearless in the Challenge', url: 'https://www.bible.com/{locale}/reading-plans/21947', description: 'Develop a spirit of power, love and self-control in the face of the unknown.' }
     ],
     comfort: [
       { title: 'Comfort in Hard Times', url: 'https://www.bible.com/{locale}/reading-plans/23160', description: "God's loving embrace near those going through distress or pain." }

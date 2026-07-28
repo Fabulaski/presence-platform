@@ -5,8 +5,65 @@ let statusBarItem: vscode.StatusBarItem;
 let presence: Presence;
 let codingStartTime: number = Date.now();
 
+const UI_TRANSLATIONS: Record<string, Record<string, string>> = {
+  en: {
+    title: 'Contextual Spiritual Presence',
+    subtitle: 'Contextual Spiritual Presence',
+    scripture: '📖 SCRIPTURE',
+    reflection: '💡 REFLECTION',
+    prayer: '🙏 PRAYER',
+    action: '🎯 MICRO-ACTION (60 SECONDS)',
+    planLabel: '📲 RECOMMENDED DEVOTIONAL PLAN ON YOUVERSION',
+    openPlan: '📖 Open Plan on YouVersion →',
+    confidence: 'Presence Platform • Confidence:',
+    progressTitle: 'Presence Engine',
+    progressMsg: 'Analyzing developer context via OpenAI GPT & YouVersion...',
+    discernedMsg: 'Presence: Context Engine discerned you are in steady flow. Keep going!',
+    breakMsg: '$(clock) Presence: Break Recommended',
+    activeMsg: '$(heart) Presence: Active',
+    tooltipMsg: 'Click for a contextual scripture break & reflection'
+  },
+  es: {
+    title: 'Presencia Espiritual Contextual',
+    subtitle: 'Presencia Espiritual Contextual',
+    scripture: '📖 VERSÍCULO',
+    reflection: '💡 REFLEXIÓN',
+    prayer: '🙏 ORACIÓN',
+    action: '🎯 MICRO-ACCIÓN (60 SEGUNDOS)',
+    planLabel: '📲 PLAN DEVOCIONAL RECOMENDADO EN YOUVERSION',
+    openPlan: '📖 Abrir Plan en YouVersion →',
+    confidence: 'Presence Platform • Confianza:',
+    progressTitle: 'Motor Presence',
+    progressMsg: 'Analizando contexto de desarrollo con OpenAI GPT y YouVersion...',
+    discernedMsg: 'Presence: El Context Engine discernió que estás en ritmo constante. ¡Sigue adelante!',
+    breakMsg: '$(clock) Presence: Pausa Recomendada',
+    activeMsg: '$(heart) Presence: Activo',
+    tooltipMsg: 'Haz clic para una pausa y reflexión espiritual'
+  },
+  pt: {
+    title: 'Presença Espiritual Contextual',
+    subtitle: 'Presença Espiritual Contextual',
+    scripture: '📖 VERSÍCULO',
+    reflection: '💡 REFLEXÃO',
+    prayer: '🙏 ORAÇÃO',
+    action: '🎯 MICRO-AÇÃO (60 SEGUNDOS)',
+    planLabel: '📲 PLANO DEVOCIONAL RECOMENDADO NO YOUVERSION',
+    openPlan: '📖 Abrir Plano no YouVersion →',
+    confidence: 'Presence Platform • Confiança:',
+    progressTitle: 'Motor Presence',
+    progressMsg: 'Analisando contexto de desenvolvimento via OpenAI GPT e YouVersion...',
+    discernedMsg: 'Presence: O Context Engine discerniu que você está em ritmo constante. Continue!',
+    breakMsg: '$(clock) Presence: Pausa Recomendada',
+    activeMsg: '$(heart) Presence: Ativo',
+    tooltipMsg: 'Clique para uma pausa e reflexão espiritual'
+  }
+};
+
 export function activate(context: vscode.ExtensionContext) {
   console.log('[Presence VS Code Extension] Extension Activated!');
+
+  const systemLang = vscode.env.language ? vscode.env.language.split('-')[0] : 'en';
+  const t = UI_TRANSLATIONS[systemLang] || UI_TRANSLATIONS['en'];
 
   // Initialize Presence SDK for VS Code Extension
   presence = Presence.initialize({
@@ -18,8 +75,8 @@ export function activate(context: vscode.ExtensionContext) {
   // Create Status Bar Item
   statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
   statusBarItem.command = 'presence.captureContext';
-  statusBarItem.text = '$(heart) Presence: Active';
-  statusBarItem.tooltip = 'Click for a contextual scripture break & reflection';
+  statusBarItem.text = t.activeMsg;
+  statusBarItem.tooltip = t.tooltipMsg;
   statusBarItem.show();
   context.subscriptions.push(statusBarItem);
 
@@ -54,27 +111,28 @@ export function activate(context: vscode.ExtensionContext) {
     const languageId = editor ? editor.document.languageId : 'typescript';
     const durationSeconds = Math.floor((Date.now() - codingStartTime) / 1000);
 
+    // Re-detect language dynamically
+    const currentLang = vscode.env.language ? vscode.env.language.split('-')[0] : 'en';
+    const langStrings = UI_TRANSLATIONS[currentLang] || UI_TRANSLATIONS['en'];
+
     vscode.window.withProgress(
       {
         location: vscode.ProgressLocation.Notification,
-        title: 'Presence Engine',
+        title: langStrings.progressTitle,
         cancellable: false
       },
       async (progress) => {
-        progress.report({ message: 'Analyzing developer context via OpenAI GPT & YouVersion...' });
+        progress.report({ message: langStrings.progressMsg });
 
         const activity = `coding_in_${languageId}`;
         const topic = `file_${fileName}_duration_${durationSeconds}s`;
-
-        // Detect system language (e.g. "es", "en", "pt-br", "fr")
-        const systemLang = vscode.env.language.split('-')[0]; // "es-MX" → "es"
 
         const exp = await presence.capture({
           userId: 'vscode_dev_usr',
           activity,
           topic,
           durationSeconds,
-          language: systemLang,
+          language: currentLang,
           metadata: { fileName, languageId }
         });
 
@@ -90,9 +148,9 @@ export function activate(context: vscode.ExtensionContext) {
             { enableScripts: false }
           );
 
-          panel.webview.html = getReflectionWebviewHtml(exp);
+          panel.webview.html = getReflectionWebviewHtml(exp, currentLang);
         } else {
-          vscode.window.showInformationMessage('Presence: El Context Engine discernió que estás en ritmo constante. ¡Sigue adelante!');
+          vscode.window.showInformationMessage(langStrings.discernedMsg);
         }
       }
     );
@@ -109,18 +167,22 @@ export function activate(context: vscode.ExtensionContext) {
   vscode.workspace.onDidChangeTextDocument((event) => {
     const elapsedMinutes = (Date.now() - codingStartTime) / (1000 * 60);
     if (elapsedMinutes >= 45) {
-      statusBarItem.text = '$(clock) Presence: Break Recommended';
+      const currentLang = vscode.env.language ? vscode.env.language.split('-')[0] : 'en';
+      const langStrings = UI_TRANSLATIONS[currentLang] || UI_TRANSLATIONS['en'];
+      statusBarItem.text = langStrings.breakMsg;
     }
   });
 }
 
 /**
  * Build a beautiful, full-width HTML page for the Webview Panel
- * that shows the complete reflection without truncation.
+ * that shows the complete reflection without truncation, translated to the current language.
  */
-function getReflectionWebviewHtml(exp: any): string {
+function getReflectionWebviewHtml(exp: any, lang: string = 'en'): string {
+  const t = UI_TRANSLATIONS[lang] || UI_TRANSLATIONS['en'];
+
   return `<!DOCTYPE html>
-<html lang="es">
+<html lang="${lang}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -244,12 +306,12 @@ function getReflectionWebviewHtml(exp: any): string {
     <div class="header">
       <div class="icon">🕊️</div>
       <h1>${escapeHtml(exp.title)}</h1>
-      <div class="subtitle">Presencia Espiritual Contextual</div>
+      <div class="subtitle">${t.subtitle}</div>
     </div>
 
     <!-- Scripture -->
     <div class="card">
-      <div class="card-label">📖 Versículo</div>
+      <div class="card-label">${t.scripture}</div>
       <div class="scripture-block">
         <div class="scripture-text">"${escapeHtml(exp.scripture.text)}"</div>
         <div class="scripture-ref">${escapeHtml(exp.scripture.reference)} (${escapeHtml(exp.scripture.translation)})</div>
@@ -258,36 +320,36 @@ function getReflectionWebviewHtml(exp: any): string {
 
     <!-- Reflection -->
     <div class="card">
-      <div class="card-label">💡 Reflexión <span class="need-badge">${escapeHtml(exp.need)}</span></div>
+      <div class="card-label">${t.reflection} <span class="need-badge">${escapeHtml(exp.need.toUpperCase())}</span></div>
       <div class="reflection-text">${escapeHtml(exp.reflection)}</div>
     </div>
 
     <!-- Prayer -->
     <div class="card">
-      <div class="card-label">🙏 Oración</div>
+      <div class="card-label">${t.prayer}</div>
       <div class="prayer-text">${escapeHtml(exp.prayer)}</div>
     </div>
 
     <!-- Action -->
     <div class="card action-box">
-      <div class="card-label" style="color: #6ee7b7;">🎯 Micro-Acción (60 segundos)</div>
+      <div class="card-label" style="color: #6ee7b7;">${t.action}</div>
       <div class="action-text">${escapeHtml(exp.action)}</div>
     </div>
 
     <!-- YouVersion Devotional Plan -->
     ${exp.youVersionPlan ? `
     <div class="card" style="border-color: rgba(245, 158, 11, 0.3); background: rgba(245, 158, 11, 0.05);">
-      <div class="card-label" style="color: #fbbf24;">📲 Plan Devocional Recomendado en YouVersion</div>
+      <div class="card-label" style="color: #fbbf24;">${t.planLabel}</div>
       <div style="font-size: 15px; font-weight: 700; color: #fef3c7; margin-bottom: 6px;">${escapeHtml(exp.youVersionPlan.title)}</div>
       ${exp.youVersionPlan.description ? `<div style="font-size: 13px; color: #cbd5e1; margin-bottom: 12px; line-height: 1.6;">${escapeHtml(exp.youVersionPlan.description)}</div>` : ''}
       <a href="${escapeHtml(exp.youVersionPlan.url)}" target="_blank" style="display: inline-block; padding: 8px 16px; background: #f59e0b; color: #0f172a; font-weight: 700; font-size: 12px; border-radius: 8px; text-decoration: none;">
-        📖 Abrir Plan en YouVersion →
+        ${t.openPlan}
       </a>
     </div>
     ` : ''}
 
     <div class="footer">
-      Presence Platform • Confianza: ${Math.round((exp.confidence || 0.9) * 100)}%
+      ${t.confidence} ${Math.round((exp.confidence || 0.9) * 100)}%
     </div>
 
   </div>
