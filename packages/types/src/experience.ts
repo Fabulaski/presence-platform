@@ -20,6 +20,11 @@ export interface ExperienceObject {
   prayer: string;           // Brief guided prayer
   action: string;           // Micro-action (e.g., "Take 3 deep breaths and write down 1 gratitude")
   readingPlanSlug?: string;
+  youVersionPlan?: {
+    title: string;
+    url: string;
+    description?: string;
+  };
   shareText: string;
   journeyChapterId?: string;
   confidence: number;

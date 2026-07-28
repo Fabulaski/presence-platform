@@ -173,6 +173,15 @@ app.get('/', async (req: Request, res: Response) => {
               <blockquote id="live-quote" class="p-3 bg-slate-900/60 border-l-4 border-sky-400 rounded text-sm italic text-slate-200">
                 "${liveExp?.scripture?.text || ''}" — <strong id="live-reference" class="not-italic text-sky-300">${liveExp?.scripture?.reference || ''}</strong>
               </blockquote>
+              <div id="live-plan-container" class="pt-2 flex items-center justify-between border-t border-slate-800/80">
+                <span id="live-plan-title" class="text-xs text-amber-400 font-semibold">
+                  📲 Plan YouVersion: ${liveExp?.youVersionPlan?.title || 'Esperanza Inquebrantable'}
+                </span>
+                <a id="live-plan-link" href="${liveExp?.youVersionPlan?.url || 'https://www.bible.com/es/reading-plans/26893'}" target="_blank" rel="noopener noreferrer"
+                   class="px-3 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/20 text-xs font-semibold transition">
+                  Abrir Devocional →
+                </a>
+              </div>
             </div>
 
             <!-- Recent Stream Table -->
@@ -302,6 +311,11 @@ app.get('/', async (req: Request, res: Response) => {
               document.getElementById('live-reflection').textContent = exp.reflection || '';
               document.getElementById('live-quote').childNodes[0].nodeValue = '"' + (exp.scripture ? exp.scripture.text : '') + '" — ';
               document.getElementById('live-reference').textContent = exp.scripture ? exp.scripture.reference : '';
+              
+              if (exp.youVersionPlan) {
+                document.getElementById('live-plan-title').textContent = '📲 Plan YouVersion: ' + exp.youVersionPlan.title;
+                document.getElementById('live-plan-link').href = exp.youVersionPlan.url;
+              }
             }
 
             // Update Stream Table

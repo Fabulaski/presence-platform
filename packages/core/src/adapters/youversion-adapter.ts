@@ -319,4 +319,69 @@ export class YouVersionScriptureAdapter implements IScriptureService {
       verseStart: 16
     };
   }
+
+  public async getReadingPlanForNeed(need: SpiritualNeed, topic?: string): Promise<{ title: string; url: string; description?: string }> {
+    if (this.apiKey) {
+      try {
+        console.log(`[YouVersion API] Querying devotional plans for adversity/need: "${need}"`);
+        const response = await fetch(`${this.endpointUrl}/plans/search?query=${encodeURIComponent(need)}&language=es`, {
+          headers: {
+            'X-YouVersion-Developer-Token': this.apiKey,
+            'Accept': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          const data = (await response.json()) as any;
+          if (data && data.plans && data.plans.length > 0) {
+            const firstPlan = data.plans[0];
+            return {
+              title: firstPlan.title || firstPlan.name,
+              url: firstPlan.url || `https://www.bible.com/es/reading-plans/${firstPlan.id}`,
+              description: firstPlan.description || `Plan devocional de YouVersion para fortalecer en ${need}.`
+            };
+          }
+        }
+      } catch (err: any) {
+        console.warn(`[YouVersion API] Fallback for devotional plans: ${err.message}`);
+      }
+    }
+
+    const plans = YOUVERSION_PLANS[need] || YOUVERSION_PLANS.hope;
+    const selected = plans[Math.floor(Math.random() * plans.length)];
+    return selected;
+  }
 }
+
+const YOUVERSION_PLANS: Record<SpiritualNeed, Array<{ title: string; url: string; description: string }>> = {
+  hope: [
+    { title: 'Esperanza Inquebrantable', url: 'https://www.bible.com/es/reading-plans/26893', description: 'Renueva tu fe y encuentra esperanza renovada para superar cualquier obstáculo en tu jornada.' },
+    { title: 'Promesas de Dios para Tiempos Difíciles', url: 'https://www.bible.com/es/reading-plans/14520', description: 'Descubre el propósito de Dios y sus promesas en momentos de incertidumbre.' }
+  ],
+  peace: [
+    { title: 'Paz en la Tormenta', url: 'https://www.bible.com/es/reading-plans/24016', description: 'Encuentra calma y serenidad mental cuando la presión y la ansiedad intentan abrumarte.' },
+    { title: 'Superando la Ansiedad y el Estrés', url: 'https://www.bible.com/es/reading-plans/18932', description: 'Herramientas bíblicas prácticas para guardar tu mente en completa paz.' }
+  ],
+  wisdom: [
+    { title: 'Sabiduría de lo Alto', url: 'https://www.bible.com/es/reading-plans/20892', description: 'Luz y dirección divina para tomar decisiones sabias y estructurar soluciones complejas.' },
+    { title: 'Proverbios: Discernimiento para la Vida', url: 'https://www.bible.com/es/reading-plans/15600', description: 'Principios eternos para resolver desafíos cotidianos con claridad y orden.' }
+  ],
+  rest: [
+    { title: 'Descansa en Su Presencia', url: 'https://www.bible.com/es/reading-plans/25498', description: 'Un llamado a pausar, soltar el agotamiento mental y renovar tus fuerzas en Dios.' },
+    { title: 'El Arte de Pausar y Renovar', url: 'https://www.bible.com/es/reading-plans/17840', description: 'Aprende a descansar físicamente y mentalmente sin culpabilidad.' }
+  ],
+  perseverance: [
+    { title: 'No Te Rindas: Firmeza hasta el Final', url: 'https://www.bible.com/es/reading-plans/22344', description: 'Fortaleza espiritual para continuar construyendo y no desmayar ante el cansancio.' },
+    { title: 'Perseverancia y Victoria', url: 'https://www.bible.com/es/reading-plans/19410', description: 'Persevera en la carrera de la vida con la mirada fija en el propósito.' }
+  ],
+  courage: [
+    { title: 'Valentía para Avanzar', url: 'https://www.bible.com/es/reading-plans/21947', description: 'Vence el temor al fallo y toma decisiones valientes para innovar y crear.' },
+    { title: 'Sin Temor en el Desafío', url: 'https://www.bible.com/es/reading-plans/16720', description: 'Desarrolla un espíritu de poder, amor y dominio propio ante lo desconocido.' }
+  ],
+  comfort: [
+    { title: 'Consuelo en Tiempos Difíciles', url: 'https://www.bible.com/es/reading-plans/23160', description: 'El abrazo amoroso de Dios cerca de quienes atraviesan agobio o dolor.' }
+  ],
+  joy: [
+    { title: 'El Gozo del Señor es tu Fuerza', url: 'https://www.bible.com/es/reading-plans/25670', description: 'Celebra cada logro y vive con gratitud y alegría continua en tu labor.' }
+  ]
+};

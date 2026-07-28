@@ -35,7 +35,7 @@ export class ContextEngine {
       urgency: classification.urgency
     });
 
-    // Step 4: Fetch Scripture via YouVersion Service Port
+    // Step 4: Fetch Scripture and Devotional Plan via YouVersion Service Port
     const scripture = await this.scriptureService.findScriptureForNeed({
       need: classification.primaryNeed,
       topic: event.topic
@@ -45,8 +45,15 @@ export class ContextEngine {
       reference: scripture.reference
     });
 
+    const youVersionPlan = await this.scriptureService.getReadingPlanForNeed(
+      classification.primaryNeed,
+      event.topic
+    );
+
     // Step 5: Build Complete Experience Object
     const experience = await this.aiPipeline.buildExperience(event, classification, scripture);
+    experience.youVersionPlan = youVersionPlan;
+    
     this.eventBus.publish(DomainEventType.EXPERIENCE_GENERATED, experience);
 
     // Step 6: Save to Live Store for real-time Web Dashboard updates

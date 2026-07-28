@@ -270,6 +270,18 @@ function getReflectionWebviewHtml(exp: any): string {
       <div class="action-text">${escapeHtml(exp.action)}</div>
     </div>
 
+    <!-- YouVersion Devotional Plan -->
+    ${exp.youVersionPlan ? `
+    <div class="card" style="border-color: rgba(245, 158, 11, 0.3); background: rgba(245, 158, 11, 0.05);">
+      <div class="card-label" style="color: #fbbf24;">📲 Plan Devocional Recomendado en YouVersion</div>
+      <div style="font-size: 15px; font-weight: 700; color: #fef3c7; margin-bottom: 6px;">${escapeHtml(exp.youVersionPlan.title)}</div>
+      ${exp.youVersionPlan.description ? `<div style="font-size: 13px; color: #cbd5e1; margin-bottom: 12px; line-height: 1.6;">${escapeHtml(exp.youVersionPlan.description)}</div>` : ''}
+      <a href="${escapeHtml(exp.youVersionPlan.url)}" target="_blank" style="display: inline-block; padding: 8px 16px; background: #f59e0b; color: #0f172a; font-weight: 700; font-size: 12px; border-radius: 8px; text-decoration: none;">
+        📖 Abrir Plan en YouVersion →
+      </a>
+    </div>
+    ` : ''}
+
     <div class="footer">
       Presence Platform • Confianza: ${Math.round((exp.confidence || 0.9) * 100)}%
     </div>
