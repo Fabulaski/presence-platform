@@ -98,22 +98,31 @@ app.get('/', async (req: Request, res: Response) => {
       </script>
       <style>
         body { font-family: system-ui, -apple-system, sans-serif; transition: background-color 0.3s, color 0.3s; }
+
+        /* Dark Theme Styles */
         html.dark body { background-color: #090d16; color: #f8fafc; }
-        html.light body { background-color: #f8fafc; color: #0f172a; }
-
-        .glass { transition: all 0.3s; }
         html.dark .glass { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(51, 65, 85, 0.5); }
-        html.light .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); border: 1px solid rgba(226, 232, 240, 0.9); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); }
+        html.dark .card-inner { background-color: rgba(2, 6, 23, 0.8) !important; border-color: rgba(30, 41, 59, 0.8) !important; color: #f8fafc !important; }
+        html.dark .quote-box { background-color: rgba(15, 23, 42, 0.7) !important; border-color: #38bdf8 !important; color: #f1f5f9 !important; }
+        html.dark .table-head { background-color: rgba(15, 23, 42, 0.6) !important; border-color: #1e293b !important; color: #94a3b8 !important; }
+        html.dark .table-row { border-color: rgba(30, 41, 59, 0.5) !important; color: #cbd5e1 !important; }
+        html.dark .table-row:hover { background-color: rgba(30, 41, 59, 0.4) !important; }
+        html.dark .progress-bg { background-color: #1e293b !important; }
 
+        /* Light Theme Styles — Clean, Elegant & High-Contrast */
+        html.light body { background-color: #f8fafc; color: #0f172a; }
+        html.light .glass { background: #ffffff; backdrop-filter: blur(12px); border: 1px solid #e2e8f0; box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.04); }
+        html.light .card-inner { background-color: #f8fafc !important; border-color: #cbd5e1 !important; color: #0f172a !important; box-shadow: 0 2px 8px rgba(0,0,0,0.03) !important; }
+        html.light .quote-box { background-color: #f0f9ff !important; border-color: #0284c7 !important; color: #0f172a !important; }
+        html.light .table-head { background-color: #f1f5f9 !important; border-color: #cbd5e1 !important; color: #334155 !important; }
+        html.light .table-row { border-color: #e2e8f0 !important; color: #1e293b !important; }
+        html.light .table-row:hover { background-color: #f1f5f9 !important; }
+        html.light .progress-bg { background-color: #e2e8f0 !important; }
         html.light .text-slate-100 { color: #0f172a !important; }
         html.light .text-slate-200 { color: #1e293b !important; }
         html.light .text-slate-300 { color: #334155 !important; }
         html.light .text-slate-400 { color: #64748b !important; }
-        html.light .bg-slate-950\/80 { background-color: rgba(248, 250, 252, 0.95) !important; border-color: #cbd5e1 !important; }
-        html.light .bg-slate-950\/60 { background-color: rgba(248, 250, 252, 0.85) !important; border-color: #cbd5e1 !important; }
-        html.light .bg-slate-900\/60 { background-color: rgba(241, 245, 249, 0.9) !important; }
-        html.light .bg-slate-900\/40 { background-color: rgba(241, 245, 249, 0.7) !important; }
-        html.light .border-slate-800 { border-color: #e2e8f0 !important; }
+        html.light .text-slate-500 { color: #475569 !important; }
       </style>
     </head>
     <body class="min-h-screen p-6 md:p-12">
@@ -148,12 +157,35 @@ app.get('/', async (req: Request, res: Response) => {
           </div>
         </header>
 
-        <!-- Hero Landing Section -->
-        <section class="glass rounded-3xl p-8 md:p-12 relative overflow-hidden">
-          <div class="max-w-3xl space-y-4 relative z-10">
-            <span id="hero-badge" class="px-3 py-1 text-xs font-semibold rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20">B2B2C SaaS Platform</span>
-            <h2 id="hero-headline" class="text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">${landing.hero.headline}</h2>
-            <p id="hero-subheadline" class="text-slate-300 text-base md:text-lg">${landing.hero.subheadline}</p>
+        <!-- Centered & Redesigned Hero Landing Section -->
+        <section class="glass rounded-3xl p-10 md:p-16 relative overflow-hidden text-center flex flex-col items-center justify-center border border-slate-700/50">
+          <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-gradient-to-tr from-sky-500/20 via-indigo-500/15 to-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+          
+          <div class="max-w-4xl mx-auto space-y-6 relative z-10 flex flex-col items-center">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20 text-xs font-bold uppercase tracking-wider shadow-sm">
+              <span class="w-2 h-2 rounded-full bg-sky-400 animate-ping"></span>
+              <span id="hero-badge">B2B2C SaaS Platform</span>
+            </div>
+            
+            <h2 id="hero-headline" class="text-3xl md:text-5xl font-black tracking-tight leading-tight bg-gradient-to-r from-slate-100 via-sky-200 to-indigo-200 bg-clip-text text-transparent">
+              ${landing.hero.headline}
+            </h2>
+            
+            <p id="hero-subheadline" class="text-slate-300 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
+              ${landing.hero.subheadline}
+            </p>
+
+            <div class="flex flex-wrap items-center justify-center gap-3 pt-2 text-xs font-semibold text-slate-300">
+              <span class="px-3.5 py-1.5 rounded-xl card-inner border border-slate-700/50 flex items-center gap-1.5 shadow-sm">
+                ⚡ Gloo AI Engine
+              </span>
+              <span class="px-3.5 py-1.5 rounded-xl card-inner border border-slate-700/50 flex items-center gap-1.5 shadow-sm">
+                📖 YouVersion Live Integration
+              </span>
+              <span class="px-3.5 py-1.5 rounded-xl card-inner border border-slate-700/50 flex items-center gap-1.5 shadow-sm">
+                💻 VS Code Extension & SDK
+              </span>
+            </div>
           </div>
         </section>
 
@@ -188,22 +220,22 @@ app.get('/', async (req: Request, res: Response) => {
           <!-- Live Experience Stream -->
           <div class="glass p-6 rounded-2xl space-y-4">
             <h4 id="lbl-livestream-title" class="font-bold text-base text-slate-200">⚡ Real-Time Context Stream (Live Stream)</h4>
-            <div id="live-card" class="bg-slate-950/80 border border-slate-800 rounded-xl p-5 space-y-3 transition-all duration-500">
+            <div id="live-card" class="card-inner border rounded-xl p-5 space-y-3 transition-all duration-500">
               <div class="flex justify-between items-center">
                 <span id="live-app" class="text-xs font-bold text-sky-400 uppercase tracking-wider">${liveExp?.appName || 'VS Code Extension'}</span>
                 <span id="live-confidence" class="text-xs text-slate-500">Confidence: ${Math.round((liveExp?.confidence || 0.9) * 100)}%</span>
               </div>
               <h5 id="live-title" class="text-lg font-semibold text-slate-100">${liveExp?.title || 'Waiting for context event...'}</h5>
               <p id="live-reflection" class="text-sm text-slate-300 leading-relaxed">${liveExp?.reflection || ''}</p>
-              <blockquote id="live-quote" class="p-3 bg-slate-900/60 border-l-4 border-sky-400 rounded text-sm italic text-slate-200">
-                "${liveExp?.scripture?.text || ''}" — <strong id="live-reference" class="not-italic text-sky-300">${liveExp?.scripture?.reference || ''}</strong>
+              <blockquote id="live-quote" class="quote-box p-3 border-l-4 rounded-r-xl text-sm italic">
+                "${liveExp?.scripture?.text || ''}" — <strong id="live-reference" class="not-italic text-sky-400 font-bold">${liveExp?.scripture?.reference || ''}</strong>
               </blockquote>
-              <div id="live-plan-container" class="pt-2 flex items-center justify-between border-t border-slate-800/80">
+              <div id="live-plan-container" class="pt-2 flex items-center justify-between border-t border-slate-700/50">
                 <span id="live-plan-title" class="text-xs text-amber-400 font-semibold">
                   📲 Plan YouVersion: ${liveExp?.youVersionPlan?.title || 'Wisdom from Above'}
                 </span>
                 <a id="live-plan-link" href="${liveExp?.youVersionPlan?.url || 'https://www.bible.com/search/plans?query=wisdom'}" target="_blank" rel="noopener noreferrer"
-                   class="px-3 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/20 text-xs font-semibold transition">
+                   class="px-3 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 border border-amber-500/20 text-xs font-semibold transition">
                   Open Devotional →
                 </a>
               </div>
@@ -214,7 +246,7 @@ app.get('/', async (req: Request, res: Response) => {
               <h5 id="lbl-recent-history" class="text-xs font-semibold text-slate-400 uppercase">RECENT CONTEXT EVENT HISTORY</h5>
               <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs text-slate-300">
-                  <thead class="text-slate-500 uppercase bg-slate-900/40 border-b border-slate-800">
+                  <thead class="table-head uppercase border-b">
                     <tr>
                       <th id="lbl-th-origin" class="p-2.5">ORIGIN / APP</th>
                       <th id="lbl-th-activity" class="p-2.5">ACTIVITY</th>
@@ -225,8 +257,8 @@ app.get('/', async (req: Request, res: Response) => {
                   </thead>
                   <tbody id="stream-table-body" class="divide-y divide-slate-800/50">
                     ${experiences.map((exp: LiveStoreItem) => `
-                      <tr class="hover:bg-slate-900/30 transition">
-                        <td class="p-2.5 font-medium text-sky-300">${exp.appName || 'VS Code Extension'}</td>
+                      <tr class="table-row transition">
+                        <td class="p-2.5 font-medium text-sky-400">${exp.appName || 'VS Code Extension'}</td>
                         <td class="p-2.5 text-slate-400">${exp.activity || 'coding'}</td>
                         <td class="p-2.5 font-semibold text-indigo-400">${exp.need.toUpperCase()}</td>
                         <td class="p-2.5 text-slate-200">${exp.scripture.reference}</td>
@@ -272,7 +304,7 @@ app.get('/', async (req: Request, res: Response) => {
                 const c = colorMap[d.need] || { bar: 'bg-slate-400', text: 'text-slate-400', bg: 'bg-slate-400/10' };
                 const plan = d.latestPlan || { url: 'https://www.bible.com/search/plans?query=' + d.need, title: d.label };
                 return `
-                  <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800 hover:border-slate-700 transition">
+                  <div class="card-inner p-4 rounded-xl border transition">
                     <div class="flex justify-between items-center mb-2">
                       <div class="flex items-center gap-3">
                         <span class="text-base font-bold ${c.text}">${d.label}</span>
@@ -280,7 +312,7 @@ app.get('/', async (req: Request, res: Response) => {
                       </div>
                       <span class="text-2xl font-extrabold ${c.text}">${d.percent}%</span>
                     </div>
-                    <div class="w-full bg-slate-800 rounded-full h-2.5 mb-3">
+                    <div class="w-full progress-bg rounded-full h-2.5 mb-3">
                       <div class="${c.bar} h-2.5 rounded-full transition-all duration-700 ease-out" style="width: ${d.percent}%"></div>
                     </div>
                     <a href="${plan.url}" target="_blank" rel="noopener noreferrer"
@@ -294,9 +326,9 @@ app.get('/', async (req: Request, res: Response) => {
           </div>
         </section>
 
-        <!-- Footer -->
+        <!-- Footer with updated text -->
         <footer class="text-center text-xs text-slate-500 pt-6 border-t border-slate-800">
-          Presence Platform © 2026 • MIT Licensed • Built for Hackathon Excellence
+          Presence Platform © 2026 • MIT Licensed • Built for Hackathon: Scripture in New Frontiers
         </footer>
 
       </div>
@@ -350,7 +382,8 @@ app.get('/', async (req: Request, res: Response) => {
             },
             apps: {
               'Sistema Inicial': 'Initial System',
-              'VS Code Extension': 'VS Code Extension'
+              'VS Code Extension': 'VS Code Extension',
+              'Extensión VS Code': 'VS Code Extension'
             }
           },
           es: {
@@ -399,7 +432,8 @@ app.get('/', async (req: Request, res: Response) => {
             },
             apps: {
               'Sistema Inicial': 'Sistema Inicial',
-              'VS Code Extension': 'Extensión VS Code'
+              'VS Code Extension': 'Extensión VS Code',
+              'Extensión VS Code': 'Extensión VS Code'
             }
           }
         };
@@ -502,7 +536,8 @@ app.get('/', async (req: Request, res: Response) => {
               document.getElementById('live-reference').textContent = exp.scripture ? exp.scripture.reference : '';
               
               if (exp.youVersionPlan) {
-                document.getElementById('live-plan-title').textContent = '📲 Plan YouVersion: ' + exp.youVersionPlan.title;
+                const planPrefix = currentLang === 'es' ? '📲 Plan YouVersion: ' : '📲 YouVersion Plan: ';
+                document.getElementById('live-plan-title').textContent = planPrefix + exp.youVersionPlan.title;
                 document.getElementById('live-plan-link').href = exp.youVersionPlan.url;
                 document.getElementById('live-plan-link').textContent = t.openDevotional;
               }
@@ -516,8 +551,8 @@ app.get('/', async (req: Request, res: Response) => {
                 const activityName = (t.activities && t.activities[e.activity]) ? t.activities[e.activity] : (e.activity || 'coding');
                 const needName = (t.needs && t.needs[e.need]) ? t.needs[e.need] : e.need;
                 return \`
-                  <tr class="hover:bg-slate-900/30 transition">
-                    <td class="p-2.5 font-medium text-sky-300">\${appName}</td>
+                  <tr class="table-row transition">
+                    <td class="p-2.5 font-medium text-sky-400">\${appName}</td>
                     <td class="p-2.5 text-slate-400">\${activityName}</td>
                     <td class="p-2.5 font-semibold text-indigo-400">\${needName.toUpperCase()}</td>
                     <td class="p-2.5 text-slate-200">\${e.scripture ? e.scripture.reference : '-'}</td>
@@ -548,8 +583,9 @@ app.get('/', async (req: Request, res: Response) => {
                   const plan = d.latestPlan || { url: 'https://www.bible.com/search/plans?query=' + d.need, title: d.label };
                   const needLabel = (t.needs && t.needs[d.need]) ? t.needs[d.need] : d.label;
                   const unitLabel = d.count === 1 ? t.timesSingular : t.timesPlural;
+                  const planPrefix = currentLang === 'es' ? 'Plan YouVersion' : 'YouVersion Plan';
                   return \`
-                    <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800 hover:border-slate-700 transition">
+                    <div class="card-inner p-4 rounded-xl border transition">
                       <div class="flex justify-between items-center mb-2">
                         <div class="flex items-center gap-3">
                           <span class="text-base font-bold \${c.text}">\${needLabel}</span>
@@ -557,12 +593,12 @@ app.get('/', async (req: Request, res: Response) => {
                         </div>
                         <span class="text-2xl font-extrabold \${c.text}">\${d.percent}%</span>
                       </div>
-                      <div class="w-full bg-slate-800 rounded-full h-2.5 mb-3">
+                      <div class="w-full progress-bg rounded-full h-2.5 mb-3">
                         <div class="\${c.bar} h-2.5 rounded-full transition-all duration-700 ease-out" style="width: \${d.percent}%"></div>
                       </div>
                       <a href="\${plan.url}" target="_blank" rel="noopener noreferrer"
                          class="inline-flex items-center gap-1.5 text-xs font-medium \${c.text} hover:underline transition">
-                        📖 Plan YouVersion: \${plan.title} →
+                        📖 \${planPrefix}: \${plan.title} →
                       </a>
                     </div>
                   \`;
