@@ -240,22 +240,12 @@ app.get('/', async (req: Request, res: Response) => {
                 comfort:      { bar: 'bg-pink-400',    text: 'text-pink-400',    bg: 'bg-pink-400/10' },
                 joy:          { bar: 'bg-yellow-400',  text: 'text-yellow-400',  bg: 'bg-yellow-400/10' }
               };
-              const youVersionPlans: Record<string, { url: string; planName: string }> = {
-                hope:         { url: 'https://www.bible.com/es/reading-plans/26893', planName: 'Esperanza Inquebrantable' },
-                peace:        { url: 'https://www.bible.com/es/reading-plans/24016', planName: 'Paz en la Tormenta' },
-                wisdom:       { url: 'https://www.bible.com/es/reading-plans/20892', planName: 'Sabiduría de lo Alto' },
-                rest:         { url: 'https://www.bible.com/es/reading-plans/25498', planName: 'Descansa en Su Presencia' },
-                perseverance: { url: 'https://www.bible.com/es/reading-plans/22344', planName: 'No Te Rindas' },
-                courage:      { url: 'https://www.bible.com/es/reading-plans/21947', planName: 'Valentía para Avanzar' },
-                comfort:      { url: 'https://www.bible.com/es/reading-plans/23160', planName: 'Consuelo en Tiempos Difíciles' },
-                joy:          { url: 'https://www.bible.com/es/reading-plans/25670', planName: 'El Gozo del Señor' }
-              };
               if (dist.length === 0) {
                 return '<p class="text-slate-500 text-sm italic">Aún no hay datos suficientes. Usa la extensión de VS Code para generar experiencias.</p>';
               }
               return dist.map(d => {
                 const c = colorMap[d.need] || { bar: 'bg-slate-400', text: 'text-slate-400', bg: 'bg-slate-400/10' };
-                const plan = youVersionPlans[d.need] || { url: 'https://www.bible.com/es/reading-plans', planName: 'Explorar Planes' };
+                const plan = d.latestPlan || { url: `https://www.bible.com/search/plans?query=${d.need}`, title: d.label };
                 return `
                   <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800 hover:border-slate-700 transition">
                     <div class="flex justify-between items-center mb-2">
@@ -270,7 +260,7 @@ app.get('/', async (req: Request, res: Response) => {
                     </div>
                     <a href="${plan.url}" target="_blank" rel="noopener noreferrer"
                        class="inline-flex items-center gap-1.5 text-xs font-medium ${c.text} hover:underline transition">
-                      📖 Plan YouVersion: ${plan.planName} →
+                      📖 Plan YouVersion: ${plan.title} →
                     </a>
                   </div>
                 `;
@@ -344,20 +334,10 @@ app.get('/', async (req: Request, res: Response) => {
                 comfort:      { bar: 'bg-pink-400',    text: 'text-pink-400',    bg: 'bg-pink-400/10' },
                 joy:          { bar: 'bg-yellow-400',  text: 'text-yellow-400',  bg: 'bg-yellow-400/10' }
               };
-              const youVersionPlans = {
-                hope:         { url: 'https://www.bible.com/es/reading-plans/26893', planName: 'Esperanza Inquebrantable' },
-                peace:        { url: 'https://www.bible.com/es/reading-plans/24016', planName: 'Paz en la Tormenta' },
-                wisdom:       { url: 'https://www.bible.com/es/reading-plans/20892', planName: 'Sabiduría de lo Alto' },
-                rest:         { url: 'https://www.bible.com/es/reading-plans/25498', planName: 'Descansa en Su Presencia' },
-                perseverance: { url: 'https://www.bible.com/es/reading-plans/22344', planName: 'No Te Rindas' },
-                courage:      { url: 'https://www.bible.com/es/reading-plans/21947', planName: 'Valentía para Avanzar' },
-                comfort:      { url: 'https://www.bible.com/es/reading-plans/23160', planName: 'Consuelo en Tiempos Difíciles' },
-                joy:          { url: 'https://www.bible.com/es/reading-plans/25670', planName: 'El Gozo del Señor' }
-              };
               const container = document.getElementById('needs-distribution');
               container.innerHTML = data.needDistribution.map(d => {
                 const c = colorMap[d.need] || { bar: 'bg-slate-400', text: 'text-slate-400', bg: 'bg-slate-400/10' };
-                const plan = youVersionPlans[d.need] || { url: 'https://www.bible.com/es/reading-plans', planName: 'Explorar Planes' };
+                const plan = d.latestPlan || { url: 'https://www.bible.com/search/plans?query=' + d.need, title: d.label };
                 return \`
                   <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800 hover:border-slate-700 transition">
                     <div class="flex justify-between items-center mb-2">
@@ -372,7 +352,7 @@ app.get('/', async (req: Request, res: Response) => {
                     </div>
                     <a href="\${plan.url}" target="_blank" rel="noopener noreferrer"
                        class="inline-flex items-center gap-1.5 text-xs font-medium \${c.text} hover:underline transition">
-                      📖 Plan YouVersion: \${plan.planName} →
+                      📖 Plan YouVersion: \${plan.title} →
                     </a>
                   </div>
                 \`;

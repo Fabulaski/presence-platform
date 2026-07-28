@@ -91,12 +91,37 @@ export class LiveExperienceStore {
     };
   }
 
-  /** Returns percentage distribution of all spiritual needs, sorted descending */
-  public getNeedDistribution(): Array<{ need: string; label: string; count: number; percent: number }> {
+  /** Returns percentage distribution of all spiritual needs with synchronized YouVersion plan links */
+  public getNeedDistribution(): Array<{
+    need: string;
+    label: string;
+    count: number;
+    percent: number;
+    latestPlan: { title: string; url: string };
+  }> {
     const total = this.experiences.length || 1;
     const needCounts: Record<string, number> = {};
+    const needLatestPlan: Record<string, { title: string; url: string }> = {};
+
+    const defaultPlans: Record<string, { title: string; url: string }> = {
+      hope:         { title: 'Esperanza Inquebrantable', url: 'https://www.bible.com/search/plans?query=esperanza' },
+      peace:        { title: 'Paz en la Tormenta', url: 'https://www.bible.com/search/plans?query=paz' },
+      wisdom:       { title: 'Sabiduría de lo Alto', url: 'https://www.bible.com/search/plans?query=sabiduria' },
+      rest:         { title: 'Descansa en Su Presencia', url: 'https://www.bible.com/search/plans?query=descanso' },
+      perseverance: { title: 'No Te Rindas: Firmeza hasta el Final', url: 'https://www.bible.com/search/plans?query=perseverancia' },
+      courage:      { title: 'Valentía para Avanzar', url: 'https://www.bible.com/search/plans?query=valentia' },
+      comfort:      { title: 'Consuelo en Tiempos Difíciles', url: 'https://www.bible.com/search/plans?query=consuelo' },
+      joy:          { title: 'El Gozo del Señor es tu Fuerza', url: 'https://www.bible.com/search/plans?query=gozo' }
+    };
+
     this.experiences.forEach((e) => {
       needCounts[e.need] = (needCounts[e.need] || 0) + 1;
+      if (!needLatestPlan[e.need] && e.youVersionPlan) {
+        needLatestPlan[e.need] = {
+          title: e.youVersionPlan.title,
+          url: e.youVersionPlan.url
+        };
+      }
     });
 
     const labelMap: Record<string, string> = {
@@ -109,7 +134,11 @@ export class LiveExperienceStore {
         need,
         label: labelMap[need] || need,
         count,
-        percent: Math.round((count / total) * 100)
+        percent: Math.round((count / total) * 100),
+        latestPlan: needLatestPlan[need] || defaultPlans[need] || {
+          title: 'Plan Devocional YouVersion',
+          url: `https://www.bible.com/search/plans?query=${encodeURIComponent(need)}`
+        }
       }))
       .sort((a, b) => b.percent - a.percent);
   }
