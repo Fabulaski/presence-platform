@@ -12,7 +12,9 @@
   ],
   "main": "./dist/extension.js",
   "activationEvents": [
-    "onStartupFinished"
+    "onCommand:presence.captureContext",
+    "onCommand:presence.openDashboard",
+    "*"
   ],
   "contributes": {
     "commands": [
@@ -37,7 +39,7 @@
     ]
   },
   "scripts": {
-    "build": "tsc",
+    "build": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node",
     "dev": "tsc --watch",
     "clean": "rimraf dist"
   },
@@ -48,6 +50,7 @@
   "devDependencies": {
     "@types/node": "^20.12.7",
     "@types/vscode": "^1.80.0",
+    "esbuild": "^0.20.2",
     "typescript": "^5.4.5"
   }
 }
