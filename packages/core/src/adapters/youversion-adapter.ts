@@ -96,14 +96,41 @@ const SCRIPTURE_CATALOG: Record<SpiritualNeed, ScriptureMatch[]> = {
 
 export class YouVersionScriptureAdapter implements IScriptureService {
   private apiKey?: string;
+  private endpointUrl: string;
 
-  constructor(apiKey?: string) {
-    this.apiKey = apiKey;
+  constructor(apiKey?: string, endpointUrl?: string) {
+    this.apiKey = apiKey || process.env.YOUVERSION_API_KEY;
+    this.endpointUrl = endpointUrl || process.env.YOUVERSION_ENDPOINT || 'https://api.youversion.com/v1';
   }
 
   public async findScriptureForNeed(query: ScriptureSearchQuery): Promise<ScriptureMatch> {
-    // If external API key exists, this adapter connects to YouVersion Platform API.
-    // Fallback/Default Catalog ensures 100% offline dev capability.
+    if (this.apiKey) {
+      try {
+        console.log(`[YouVersion API] Fetching live scripture for need: "${query.need}" via ${this.endpointUrl}`);
+        const response = await fetch(`${this.endpointUrl}/passages/search?query=${encodeURIComponent(query.need)}&language=${query.language || 'es'}`, {
+          headers: {
+            'X-YouVersion-Developer-Token': this.apiKey,
+            'Accept': 'application/json'
+          }
+        });
+        if (response.ok) {
+          const data = (await response.json()) as any;
+          if (data && data.reference && data.text) {
+            return {
+              reference: data.reference,
+              text: data.text,
+              translation: query.translation || 'NVI',
+              book: data.book || 'Biblia',
+              chapter: data.chapter || 1,
+              verseStart: data.verseStart || 1
+            };
+          }
+        }
+      } catch (err: any) {
+        console.warn(`[YouVersion API] Live fetch fallback to local catalog: ${err.message}`);
+      }
+    }
+
     const matches = SCRIPTURE_CATALOG[query.need] || SCRIPTURE_CATALOG.hope;
     const randomIndex = Math.floor(Math.random() * matches.length);
     return matches[randomIndex];
@@ -114,6 +141,25 @@ export class YouVersionScriptureAdapter implements IScriptureService {
   }
 
   public async getVerseByReference(reference: string, translation = 'NVI'): Promise<ScriptureMatch> {
+    if (this.apiKey) {
+      try {
+        const res = await fetch(`https://bible-api.com/${encodeURIComponent(reference)}`);
+        if (res.ok) {
+          const data = (await res.json()) as any;
+          return {
+            reference: data.reference || reference,
+            text: data.text?.trim() || 'Texto bíblico no disponible',
+            translation,
+            book: data.verses?.[0]?.book_name || reference.split(' ')[0],
+            chapter: data.verses?.[0]?.chapter || 1,
+            verseStart: data.verses?.[0]?.verse || 1
+          };
+        }
+      } catch (e) {
+        // fallback
+      }
+    }
+
     return {
       reference,
       text: 'Porque de tal manera amó Dios al mundo, que ha dado a su Hijo unigénito, para que todo aquel que en él cree, no se pierda, mas tenga vida eterna.',
