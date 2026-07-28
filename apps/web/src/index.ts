@@ -159,6 +159,16 @@ app.get('/', async (req: Request, res: Response) => {
   res.send(html);
 });
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`[Presence Web] Server running on http://localhost:${PORT}`);
+}).on('error', (err: any) => {
+  if (err.code === 'EADDRINUSE') {
+    const fallbackPort = Number(PORT) + 5;
+    console.log(`[Presence Web] Puerto ${PORT} en uso. Iniciando servidor en puerto alternativo: http://localhost:${fallbackPort}`);
+    app.listen(fallbackPort, () => {
+      console.log(`[Presence Web] Server running on http://localhost:${fallbackPort}`);
+    });
+  } else {
+    console.error(err);
+  }
 });
