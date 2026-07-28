@@ -10,7 +10,7 @@ interface GeneratedReflectionData {
 }
 
 // ─── Fallback Templates (used when OpenAI is unreachable) ──────────────────
-const FALLBACK_TEMPLATES: Record<SpiritualNeed, Array<{ title: string; reflection: (t: string) => string; prayer: string; action: string }>> = {
+const FALLBACK_TEMPLATES_ES: Record<SpiritualNeed, Array<{ title: string; reflection: (t: string) => string; prayer: string; action: string }>> = {
   wisdom: [
     { title: 'Luz para tu Código', reflection: (t) => `Al trabajar en ${t}, recuerda que la sabiduría técnica nace de la serenidad. Dios da claridad a tu entendimiento.`, prayer: 'Señor, ilumina mi mente para estructurar soluciones limpias y sabias. Amén.', action: 'Haz una pausa de 60 segundos y toma un vaso de agua.' },
     { title: 'Claridad y Entendimiento', reflection: (t) => `En medio de la complejidad de ${t}, la verdadera inteligencia consiste en reconocer que la luz viene de arriba.`, prayer: 'Señor, dame paciencia y discernimiento para hallar el camino correcto. Amén.', action: 'Respira profundo 3 veces y retoma el código con calma.' }
@@ -41,6 +41,37 @@ const FALLBACK_TEMPLATES: Record<SpiritualNeed, Array<{ title: string; reflectio
   ]
 };
 
+const FALLBACK_TEMPLATES_EN: Record<SpiritualNeed, Array<{ title: string; reflection: (t: string) => string; prayer: string; action: string }>> = {
+  wisdom: [
+    { title: 'Light for Your Code', reflection: (t) => `As you work on ${t}, remember that technical wisdom springs from serenity. God grants clarity to your understanding.`, prayer: 'Lord, illuminate my mind to structure clean and wise solutions. Amen.', action: 'Take a 60-second pause and drink a glass of water.' },
+    { title: 'Clarity and Understanding', reflection: (t) => `Amid the complexity of ${t}, true intelligence is recognizing that light comes from above.`, prayer: 'Lord, give me patience and discernment to find the right path. Amen.', action: 'Take 3 deep breaths and return to coding calmly.' }
+  ],
+  rest: [
+    { title: 'Pause for the Mind', reflection: (t) => `Your productivity does not define your worth. After working on ${t}, rest renews your strength.`, prayer: 'Father, I surrender mental fatigue and let Your presence refresh my energy. Amen.', action: 'Close your eyes for 60 seconds and stretch your shoulders.' },
+    { title: 'Renewal and Vigor', reflection: (t) => `Even the best developers need to pause. Working on ${t}, rest under the shadow of the Most High.`, prayer: 'Lord, renew my spirit and bring physical and mental peace. Amen.', action: 'Step away from the screen for one minute.' }
+  ],
+  peace: [
+    { title: 'Serenity in the Challenge', reflection: (t) => `Errors in ${t} are temporary. Do not let rush steal your peace.`, prayer: 'Lord, I surrender all frustration and rest in Your peace. Amen.', action: 'Release the keyboard, exhale softly, and trust the process.' },
+    { title: 'Peace in the Technical Storm', reflection: (t) => `When things in ${t} do not work on the first try, calm is the key to excellence.`, prayer: 'Father, grant me inner peace to face any error. Amen.', action: 'Take 60 seconds to meditate before compiling again.' }
+  ],
+  hope: [
+    { title: 'Renewal of Hope', reflection: (t) => `Every step forward in ${t} is part of a greater purpose. Your dedication will bring blessing.`, prayer: 'Lord, fill my day with renewed hope and joy. Amen.', action: 'Be thankful for this project and continue with enthusiasm.' },
+    { title: 'Fresh Perspectives', reflection: (t) => `No matter how difficult ${t} seems, God has a future of good for you.`, prayer: 'Lord, my hope is anchored in You. Amen.', action: 'Visualize the goal accomplished and move forward in faith.' }
+  ],
+  perseverance: [
+    { title: 'Perseverance Overcomes', reflection: (t) => `Great systems are built line by line. Working on ${t}, constancy overcomes any obstacle.`, prayer: 'Lord, strengthen me so I do not grow weary and finish with excellence. Amen.', action: 'Write down your next short goal and move forward firmly.' }
+  ],
+  courage: [
+    { title: 'Courage to Innovate', reflection: (t) => `Make bold decisions in ${t}. God has not given us a spirit of fear, but of power and sound mind.`, prayer: 'Lord, remove all fear of failure and fill my spirit with courage. Amen.', action: 'Take the next step with determination and faith.' }
+  ],
+  comfort: [
+    { title: 'Comfort and Encouragement', reflection: (t) => `If you feel overwhelmed in ${t}, remember God is near to comfort and uphold you.`, prayer: 'Lord, You are my refuge and the comfort of my soul. Amen.', action: 'Allow yourself to feel His peace and draw fresh breath.' }
+  ],
+  joy: [
+    { title: 'Joy in Creation', reflection: (t) => `Enjoy the process of creating in ${t}. The joy of the Lord is your true strength.`, prayer: 'Lord, let Your joy fill my heart as I build. Amen.', action: 'Smile, celebrate your progress, and share joy.' }
+  ]
+};
+
 // ─── OpenAI-Powered AI Pipeline Adapter ────────────────────────────────────
 export class GlooAIPipelineAdapter implements IGlooAIPipeline {
   private openaiKey: string;
@@ -54,10 +85,10 @@ export class GlooAIPipelineAdapter implements IGlooAIPipeline {
 
   /** Clean raw topic strings into human-readable module names */
   private cleanTopic(rawTopic?: string): string {
-    if (!rawTopic) return 'este módulo';
+    if (!rawTopic) return 'this module';
     const match = rawTopic.match(/file_([^_\s]+)/i);
     if (match && match[1]) return match[1];
-    return rawTopic.replace(/duration_\d+s?/g, '').replace(/[_-]/g, ' ').trim() || 'este proyecto';
+    return rawTopic.replace(/duration_\d+s?/g, '').replace(/[_-]/g, ' ').trim() || 'this project';
   }
 
   /** Make a request to OpenAI Chat Completions API */
@@ -101,15 +132,21 @@ export class GlooAIPipelineAdapter implements IGlooAIPipeline {
 
   // ─── Context Classification ────────────────────────────────────────────
   public async classifyContext(event: ContextEvent): Promise<ContextClassification> {
-    const systemPrompt = `Eres el Agente de Clasificación Contextual de Presence Platform, una plataforma SaaS de bienestar espiritual para desarrolladores de software.
+    const lang = event.language || 'es';
+    const isEn = lang === 'en';
 
-Tu trabajo es analizar la actividad del usuario y determinar:
-1. Si Presence debe intervenir con un momento espiritual (shouldIntervene).
-2. El tipo de contexto emocional/espiritual detectado (contextType).
-3. La necesidad espiritual primaria (primaryNeed).
-4. La urgencia de la intervención (urgency).
-
-Responde EXCLUSIVAMENTE en JSON con esta estructura:
+    const systemPrompt = isEn
+      ? `You are the Context Classification Agent of Presence Platform, a SaaS spiritual wellness platform for software developers.
+Analyze the user activity and return JSON:
+{
+  "shouldIntervene": boolean,
+  "contextType": "creative_block" | "anxiety" | "weariness" | "celebration" | "frustration" | "loneliness" | "general",
+  "primaryNeed": "wisdom" | "rest" | "peace" | "hope" | "perseverance" | "courage" | "comfort" | "joy",
+  "urgency": "low" | "medium" | "high",
+  "confidence": number (0.0-1.0),
+  "reasoning": "short explanation in English"
+}`
+      : `Eres el Agente de Clasificación Contextual de Presence Platform. Analiza la actividad y responde en JSON:
 {
   "shouldIntervene": boolean,
   "contextType": "creative_block" | "anxiety" | "weariness" | "celebration" | "frustration" | "loneliness" | "general",
@@ -117,20 +154,14 @@ Responde EXCLUSIVAMENTE en JSON con esta estructura:
   "urgency": "low" | "medium" | "high",
   "confidence": number (0.0-1.0),
   "reasoning": "breve explicación en español"
-}
+}`;
 
-Reglas:
-- Si la duración es >180s, considera "rest" o "perseverance".
-- Si hay frustración evidente (errores, stuck, block), considera "peace" o "hope".
-- Si parece celebración o logro, usa "joy".
-- No intervengas si la actividad sugiere que el usuario está en un buen flujo de trabajo (<60s, sin señales negativas).`;
-
-    const userPrompt = `Actividad: "${event.activity}", Archivo/Tema: "${event.topic || 'ninguno'}", Plataforma: "${event.platform}", Duración sesión: ${event.durationSeconds || 0} segundos, Confianza del sensor: ${event.confidence}`;
+    const userPrompt = `Activity: "${event.activity}", File/Topic: "${event.topic || 'none'}", Platform: "${event.platform}", Duration: ${event.durationSeconds || 0}s, Language: ${lang}`;
 
     const parsed = await this.callOpenAI(systemPrompt, userPrompt);
 
     if (parsed && parsed.primaryNeed) {
-      console.log(`[OpenAI] ✅ Clasificación GPT: ${parsed.contextType} → ${parsed.primaryNeed} (${parsed.confidence})`);
+      console.log(`[OpenAI] ✅ GPT Classification (${lang}): ${parsed.contextType} → ${parsed.primaryNeed}`);
       return {
         eventId: event.id,
         shouldIntervene: parsed.shouldIntervene ?? true,
@@ -143,7 +174,7 @@ Reglas:
     }
 
     // ── Fallback: rule-based classification ────────────────────────────
-    console.log(`[OpenAI] ⚠️ Fallback a clasificación por reglas`);
+    console.log(`[OpenAI] ⚠️ Fallback to rule-based classification (${lang})`);
     const activityLower = event.activity.toLowerCase();
     const topicLower = (event.topic || '').toLowerCase();
 
@@ -180,6 +211,7 @@ Reglas:
   public async generateReflection(need: SpiritualNeed, scripture: ScriptureMatch, topic?: string, language?: string): Promise<GeneratedReflectionData> {
     const topicClean = this.cleanTopic(topic);
     const lang = language || 'es';
+    const isEn = lang === 'en';
 
     const LANG_LABELS: Record<string, Record<SpiritualNeed, string>> = {
       es: { wisdom: 'sabiduría', rest: 'descanso', peace: 'paz interior', hope: 'esperanza', perseverance: 'perseverancia', courage: 'valentía', comfort: 'consuelo', joy: 'gozo y gratitud' },
@@ -188,55 +220,69 @@ Reglas:
     };
     const needLabels = LANG_LABELS[lang] || LANG_LABELS['es'];
 
-    const LANG_INSTRUCTIONS: Record<string, string> = {
-      es: 'Escribe en ESPAÑOL, con tono pastoral cercano (no formal ni religioso rígido).',
-      en: 'Write in ENGLISH, with a warm pastoral tone (not formal or rigidly religious).',
-      pt: 'Escreva em PORTUGUÊS, com tom pastoral caloroso (não formal nem rigidamente religioso).',
-      fr: 'Écrivez en FRANÇAIS, avec un ton pastoral chaleureux (ni formel ni rigidement religieux).',
-      de: 'Schreiben Sie auf DEUTSCH, mit einem warmherzigen pastoralen Ton (nicht formell oder starr religiös).'
-    };
-    const langInstruction = LANG_INSTRUCTIONS[lang] || LANG_INSTRUCTIONS['es'];
+    const systemPrompt = isEn
+      ? `You are the Spiritual Reflection Agent of Presence Platform. Your mission is to generate a brief, warm, authentic pastoral reflection for a software developer.
 
-    const systemPrompt = `Eres el Agente de Reflexión Espiritual de Presence Platform. Tu misión es generar un momento de acompañamiento espiritual breve, cálido y genuino para un desarrollador de software.
+CRITICAL INSTRUCTIONS:
+- Write 100% of your output in ENGLISH (title, reflection, prayer, action).
+- Connect the Bible verse directly to the developer's current coding task/file.
+- The prayer must be brief (1-2 sentences), intimate, ending in Amen.
+- The action must be a practical 60-second micro-break.
+- The title must be creative, in ENGLISH, unique every time, maximum 5 words.
 
-IMPORTANTE:
-- ${langInstruction}
-- La reflexión debe conectar el versículo bíblico con la experiencia concreta del desarrollador.
-- La oración debe ser breve (1-2 frases), íntima, como si hablaras con un amigo.
-- La micro-acción debe ser práctica, realizable en 60 segundos.
-- El título debe ser creativo, diferente cada vez, máximo 5 palabras.
-- NUNCA repitas las mismas frases genéricas. Sé original y específico.
-
-Responde EXCLUSIVAMENTE en JSON:
+Respond EXCLUSIVELY in JSON format:
 {
-  "title": "Título creativo y breve",
-  "reflection": "Reflexión de 2-3 frases conectando el versículo con la situación del desarrollador",
+  "title": "Creative short title in English",
+  "reflection": "Reflection in English connecting the verse to the software developer",
+  "prayer": "Short intimate prayer ending in Amen in English",
+  "action": "Practical 60-second micro-action in English"
+}`
+      : `Eres el Agente de Reflexión Espiritual de Presence Platform. Tu misión es generar un momento de acompañamiento espiritual breve, cálido y genuino para un desarrollador de software.
+
+INSTRUCCIONES CRÍTICAS:
+- Escribe el 100% de tu respuesta en ESPAÑOL (título, reflexión, oración, acción).
+- La reflexión debe conectar el versículo bíblico con la experiencia concreta del desarrollador.
+- La oración debe ser breve (1-2 frases), íntima, terminando en Amén.
+- La micro-acción debe ser práctica, realizable en 60 segundos.
+- El título debe ser creativo, en ESPAÑOL, diferente cada vez, máximo 5 palabras.
+
+Responde EXCLUSIVAMENTE en JSON format:
+{
+  "title": "Título creativo y breve en español",
+  "reflection": "Reflexión en español conectando el versículo con el desarrollador",
   "prayer": "Oración breve y cercana terminando en Amén",
-  "action": "Micro-acción práctica de 60 segundos"
+  "action": "Micro-acción práctica de 60 segundos en español"
 }`;
 
-    const userPrompt = `Necesidad espiritual: ${needLabels[need] || need}
+    const userPrompt = isEn
+      ? `Spiritual need: ${needLabels[need] || need}
+Verse: "${scripture.text}" (${scripture.reference})
+Developer's active file/module: ${topicClean}
+Target language: ENGLISH
+Local time: ${new Date().getHours()}:${String(new Date().getMinutes()).padStart(2, '0')}`
+      : `Necesidad espiritual: ${needLabels[need] || need}
 Versículo: "${scripture.text}" (${scripture.reference})
 Módulo activo del desarrollador: ${topicClean}
-Idioma del sistema: ${lang}
-Hora local aproximada: ${new Date().getHours()}:${String(new Date().getMinutes()).padStart(2, '0')}`;
+Idioma objetivo: ESPAÑOL
+Hora local: ${new Date().getHours()}:${String(new Date().getMinutes()).padStart(2, '0')}`;
 
     const parsed = await this.callOpenAI(systemPrompt, userPrompt);
 
     if (parsed && parsed.reflection) {
-      console.log(`[OpenAI] ✅ Reflexión GPT generada (${lang}): "${parsed.title}"`);
+      console.log(`[OpenAI] ✅ GPT Reflection generated (${lang}): "${parsed.title}"`);
       return {
-        title: parsed.title || 'Un Momento con Dios',
+        title: parsed.title || (isEn ? 'A Moment with God' : 'Un Momento con Dios'),
         reflection: parsed.reflection,
-        prayer: parsed.prayer || 'Señor, acompáñame en este momento. Amén.',
-        action: parsed.action || 'Tómate 60 segundos de pausa y respira profundo.',
+        prayer: parsed.prayer || (isEn ? 'Lord, abide with me in this moment. Amen.' : 'Señor, acompáñame en este momento. Amén.'),
+        action: parsed.action || (isEn ? 'Take a 60-second pause and breathe deeply.' : 'Tómate 60 segundos de pausa y respira profundo.'),
         shareText: `"${scripture.text}" - ${scripture.reference} via Presence Platform`
       };
     }
 
-    // ── Fallback: dynamic templates ───────────────────────────────────
-    console.log(`[OpenAI] ⚠️ Fallback a plantillas dinámicas`);
-    const templates = FALLBACK_TEMPLATES[need] || FALLBACK_TEMPLATES.wisdom;
+    // ── Fallback: localized dynamic templates ──────────────────────────
+    console.log(`[OpenAI] ⚠️ Fallback to localized templates (${lang})`);
+    const catalog = isEn ? FALLBACK_TEMPLATES_EN : FALLBACK_TEMPLATES_ES;
+    const templates = catalog[need] || catalog.wisdom;
     const selected = templates[Math.floor(Math.random() * templates.length)];
 
     return {
