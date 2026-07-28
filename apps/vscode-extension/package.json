@@ -1,0 +1,53 @@
+{
+  "name": "presence-vscode-extension",
+  "displayName": "Presence Platform — Contextual Scripture & Reflection",
+  "description": "Brings contextual scripture, wisdom, and break reminders into VS Code based on developer activity.",
+  "version": "1.0.0",
+  "publisher": "presence-platform",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "presence.captureContext",
+        "title": "Presence: Capture Context & Reflect",
+        "icon": "$(heart)"
+      },
+      {
+        "command": "presence.openDashboard",
+        "title": "Presence: Open Mission Control Dashboard"
+      }
+    ],
+    "statusBar": [
+      {
+        "id": "presence.statusBar",
+        "command": "presence.captureContext",
+        "name": "Presence Platform Status",
+        "alignment": "right",
+        "priority": 100
+      }
+    ]
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@presence/sdk": "workspace:*",
+    "@presence/types": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.7",
+    "@types/vscode": "^1.80.0",
+    "typescript": "^5.4.5"
+  }
+}

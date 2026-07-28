@@ -106,13 +106,14 @@ export class YouVersionScriptureAdapter implements IScriptureService {
   public async findScriptureForNeed(query: ScriptureSearchQuery): Promise<ScriptureMatch> {
     if (this.apiKey) {
       try {
-        console.log(`[YouVersion API] Fetching live scripture for need: "${query.need}" via ${this.endpointUrl}`);
+        console.log(`[YouVersion API] Live HTTP search for need: "${query.need}"`);
         const response = await fetch(`${this.endpointUrl}/passages/search?query=${encodeURIComponent(query.need)}&language=${query.language || 'es'}`, {
           headers: {
             'X-YouVersion-Developer-Token': this.apiKey,
             'Accept': 'application/json'
           }
         });
+
         if (response.ok) {
           const data = (await response.json()) as any;
           if (data && data.reference && data.text) {
@@ -127,7 +128,7 @@ export class YouVersionScriptureAdapter implements IScriptureService {
           }
         }
       } catch (err: any) {
-        console.warn(`[YouVersion API] Live fetch fallback to local catalog: ${err.message}`);
+        console.warn(`[YouVersion API] Falling back to local catalog: ${err.message}`);
       }
     }
 
@@ -141,23 +142,24 @@ export class YouVersionScriptureAdapter implements IScriptureService {
   }
 
   public async getVerseByReference(reference: string, translation = 'NVI'): Promise<ScriptureMatch> {
-    if (this.apiKey) {
-      try {
-        const res = await fetch(`https://bible-api.com/${encodeURIComponent(reference)}`);
-        if (res.ok) {
-          const data = (await res.json()) as any;
+    try {
+      // Live API query to Bible API
+      const res = await fetch(`https://bible-api.com/${encodeURIComponent(reference)}`);
+      if (res.ok) {
+        const data = (await res.json()) as any;
+        if (data && data.text) {
           return {
             reference: data.reference || reference,
-            text: data.text?.trim() || 'Texto bíblico no disponible',
+            text: data.text.trim(),
             translation,
             book: data.verses?.[0]?.book_name || reference.split(' ')[0],
             chapter: data.verses?.[0]?.chapter || 1,
             verseStart: data.verses?.[0]?.verse || 1
           };
         }
-      } catch (e) {
-        // fallback
       }
+    } catch (err) {
+      // fallback
     }
 
     return {

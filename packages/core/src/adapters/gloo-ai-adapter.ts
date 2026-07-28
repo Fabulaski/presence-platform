@@ -13,40 +13,50 @@ export class GlooAIPipelineAdapter implements IGlooAIPipeline {
   public async classifyContext(event: ContextEvent): Promise<ContextClassification> {
     if (this.apiKey) {
       try {
-        console.log(`[Gloo AI Gateway] Connecting to multi-agent pipeline at ${this.agentEndpoint}...`);
-        const response = await fetch(`${this.agentEndpoint}/classify`, {
+        console.log(`[Gloo AI Gateway] Requesting live multi-agent classification via ${this.agentEndpoint}...`);
+        const response = await fetch(`${this.agentEndpoint}/chat/completions`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${this.apiKey}`,
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            activity: event.activity,
-            topic: event.topic,
-            platform: event.platform,
-            durationSeconds: event.durationSeconds,
-            metadata: event.metadata
+            model: 'gloo-agent-pipeline-v1',
+            messages: [
+              {
+                role: 'system',
+                content: 'You are the Gloo AI Context Classifier Agent for Presence Platform. Analyze user activity and return a JSON object with: { shouldIntervene: boolean, contextType: string, primaryNeed: string, urgency: string, confidence: number, reasoning: string }'
+              },
+              {
+                role: 'user',
+                content: `Activity: "${event.activity}", Topic: "${event.topic || 'none'}", Platform: "${event.platform}", Duration: ${event.durationSeconds || 0}s`
+              }
+            ],
+            response_format: { type: 'json_object' }
           })
         });
 
         if (response.ok) {
           const data = (await response.json()) as any;
-          return {
-            eventId: event.id,
-            shouldIntervene: data.shouldIntervene ?? true,
-            contextType: data.contextType || 'creative_block',
-            primaryNeed: data.primaryNeed || 'hope',
-            urgency: data.urgency || 'medium',
-            confidence: data.confidence || 0.92,
-            reasoning: data.reasoning || 'Gloo AI Live Multi-Agent Classification'
-          };
+          const parsed = JSON.parse(data.choices?.[0]?.message?.content || '{}');
+          if (parsed && parsed.primaryNeed) {
+            return {
+              eventId: event.id,
+              shouldIntervene: parsed.shouldIntervene ?? true,
+              contextType: parsed.contextType || 'creative_block',
+              primaryNeed: parsed.primaryNeed || 'hope',
+              urgency: parsed.urgency || 'medium',
+              confidence: parsed.confidence || 0.95,
+              reasoning: parsed.reasoning || 'Live Gloo AI Multi-Agent Classification'
+            };
+          }
         }
       } catch (err: any) {
         console.warn(`[Gloo AI Gateway] Live multi-agent pipeline fallback: ${err.message}`);
       }
     }
 
-    // Local Fallback Classifier (Zero-latency fallback)
+    // Local Intelligent Fallback Classifier
     const activityLower = event.activity.toLowerCase();
     const topicLower = (event.topic || '').toLowerCase();
 
@@ -61,7 +71,7 @@ export class GlooAIPipelineAdapter implements IGlooAIPipeline {
     } else if (activityLower.includes('music') || topicLower.includes('anxiety') || topicLower.includes('stress')) {
       contextType = 'anxiety';
       primaryNeed = 'peace';
-    } else if (topicLower.includes('tired') || topicLower.includes('exhausted')) {
+    } else if (activityLower.includes('coding') || topicLower.includes('tired') || topicLower.includes('weariness')) {
       contextType = 'weariness';
       primaryNeed = 'rest';
     } else if (topicLower.includes('joy') || topicLower.includes('thanks')) {
@@ -89,26 +99,43 @@ export class GlooAIPipelineAdapter implements IGlooAIPipeline {
   public async generateReflection(need: SpiritualNeed, scripture: ScriptureMatch, topic?: string) {
     if (this.apiKey) {
       try {
-        const response = await fetch(`${this.agentEndpoint}/generate-reflection`, {
+        const response = await fetch(`${this.agentEndpoint}/chat/completions`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${this.apiKey}`,
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ need, reference: scripture.reference, text: scripture.text, topic })
+          body: JSON.stringify({
+            model: 'gloo-agent-reflection-v1',
+            messages: [
+              {
+                role: 'system',
+                content: 'You are the Gloo AI Reflection Agent for Presence Platform. Generate a brief encouraging reflection, prayer, micro-action, and title in JSON format: { title: string, reflection: string, prayer: string, action: string }'
+              },
+              {
+                role: 'user',
+                content: `Need: ${need}, Verse: "${scripture.text}" (${scripture.reference}), Context Topic: ${topic || 'work'}`
+              }
+            ],
+            response_format: { type: 'json_object' }
+          })
         });
+
         if (response.ok) {
           const data = (await response.json()) as any;
-          return {
-            title: data.title || 'Un Momento de Esperanza',
-            reflection: data.reflection,
-            prayer: data.prayer,
-            action: data.action,
-            shareText: `${scripture.text} - ${scripture.reference} via Presence Platform`
-          };
+          const parsed = JSON.parse(data.choices?.[0]?.message?.content || '{}');
+          if (parsed && parsed.reflection) {
+            return {
+              title: parsed.title || 'Un Momento de Esperanza',
+              reflection: parsed.reflection,
+              prayer: parsed.prayer || 'Señor, dame paz y sabiduría en este momento. Amén.',
+              action: parsed.action || 'Tómate 60 segundos y continúa con fe.',
+              shareText: `"${scripture.text}" - ${scripture.reference} via Presence Platform`
+            };
+          }
         }
       } catch (err: any) {
-        // Fall back to intelligent template
+        // fallback
       }
     }
 
