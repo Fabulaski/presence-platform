@@ -92,10 +92,26 @@ export class GlooAIPipelineAdapter implements IGlooAIPipeline {
     this.glooClientSecret = clientSecret || process.env.GLOO_CLIENT_SECRET || '6amjvb3vuo3lboeq1lhmrh5utbiqob4n8v9t5h60fmglqujgvrs';
     this.glooTokenUrl = process.env.GLOO_TOKEN_URL || 'https://platform.ai.gloo.com/oauth2/token';
     this.glooEndpoint = process.env.GLOO_ENDPOINT || 'https://platform.ai.gloo.com/ai/v1/chat/completions';
-    this.glooModel = process.env.GLOO_MODEL || 'gloo-qwen-3.7-max';
+    this.glooModel = process.env.GLOO_MODEL || 'gloo-qwen-3.7-flash';
 
     this.openaiKey = process.env.OPENAI_API_KEY || '';
     this.openaiModel = process.env.OPENAI_MODEL || 'gpt-4o-mini';
+  }
+
+  /** Safely parse JSON from raw LLM text outputs (stripping markdown codeblocks if present) */
+  private extractJSON(text?: string): any | null {
+    if (!text) return null;
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      try {
+        return JSON.parse(jsonMatch[0]);
+      } catch (e) {}
+    }
+    try {
+      return JSON.parse(text);
+    } catch (e) {
+      return null;
+    }
   }
 
   /** Retrieve or refresh OAuth2 Access Token from Gloo AI Platform */
@@ -109,7 +125,11 @@ export class GlooAIPipelineAdapter implements IGlooAIPipeline {
     }
 
     try {
-      const basicAuth = Buffer.from(`${this.glooClientId}:${this.glooClientSecret}`).toString('base64');
+      const rawAuth = `${this.glooClientId}:${this.glooClientSecret}`;
+      const basicAuth = typeof Buffer !== 'undefined'
+        ? Buffer.from(rawAuth).toString('base64')
+        : (typeof btoa === 'function' ? btoa(rawAuth) : '');
+
       const response = await fetch(this.glooTokenUrl, {
         method: 'POST',
         headers: {
@@ -166,9 +186,8 @@ export class GlooAIPipelineAdapter implements IGlooAIPipeline {
               { role: 'system', content: systemPrompt },
               { role: 'user', content: userPrompt }
             ],
-            temperature: 0.9,
-            max_tokens: 500,
-            response_format: { type: 'json_object' }
+            temperature: 0.7,
+            max_tokens: 500
           })
         });
 
@@ -176,8 +195,11 @@ export class GlooAIPipelineAdapter implements IGlooAIPipeline {
           const data = (await response.json()) as any;
           const content = data.choices?.[0]?.message?.content;
           if (content) {
-            console.log(`[Gloo AI Engine] ✅ Model output received from ${this.glooModel}`);
-            return JSON.parse(content);
+            const parsed = this.extractJSON(content);
+            if (parsed) {
+              console.log(`[Gloo AI Engine] ✅ Model output received from ${this.glooModel}`);
+              return parsed;
+            }
           }
         } else {
           const errorBody = await response.text().catch(() => '');
