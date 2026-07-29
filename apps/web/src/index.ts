@@ -115,20 +115,29 @@ app.get('/', async (req: Request, res: Response) => {
         html.dark .table-row:hover { background-color: rgba(30, 41, 59, 0.4) !important; }
         html.dark .progress-bg { background-color: #1e293b !important; }
 
-        /* Light Theme Styles — Clean, Elegant & High-Contrast */
+        /* Light Theme Styles — UI/UX Pro Max Ultra-Contrast & Crystal Readability */
         html.light body { background-color: #f8fafc; color: #0f172a; }
-        html.light .glass { background: #ffffff; backdrop-filter: blur(12px); border: 1px solid #e2e8f0; box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.04); }
-        html.light .card-inner { background-color: #f8fafc !important; border-color: #cbd5e1 !important; color: #0f172a !important; box-shadow: 0 2px 8px rgba(0,0,0,0.03) !important; }
-        html.light .quote-box { background-color: #f0f9ff !important; border-color: #0284c7 !important; color: #0f172a !important; }
-        html.light .table-head { background-color: #f1f5f9 !important; border-color: #cbd5e1 !important; color: #334155 !important; }
+        html.light .glass { background: #ffffff; backdrop-filter: blur(12px); border: 1px solid #cbd5e1; box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.06); }
+        html.light #hero-headline {
+          background: linear-gradient(135deg, #0f172a 0%, #0369a1 50%, #3730a3 100%) !important;
+          -webkit-background-clip: text !important;
+          background-clip: text !important;
+          color: transparent !important;
+        }
+        html.light #hero-subheadline { color: #334155 !important; font-weight: 500 !important; }
+        html.light #hero-badge-container { background-color: #e0f2fe !important; border-color: #38bdf8 !important; color: #0369a1 !important; }
+        html.light #hero-badge { color: #0369a1 !important; font-weight: 700 !important; }
+        html.light .card-inner { background-color: #ffffff !important; border-color: #cbd5e1 !important; color: #0f172a !important; box-shadow: 0 2px 10px rgba(0,0,0,0.04) !important; }
+        html.light .quote-box { background-color: #f0f9ff !important; border-color: #0284c7 !important; color: #0f172a !important; font-weight: 500 !important; }
+        html.light .table-head { background-color: #f1f5f9 !important; border-color: #cbd5e1 !important; color: #0f172a !important; font-weight: 700 !important; }
         html.light .table-row { border-color: #e2e8f0 !important; color: #1e293b !important; }
         html.light .table-row:hover { background-color: #f1f5f9 !important; }
-        html.light .progress-bg { background-color: #e2e8f0 !important; }
+        html.light .progress-bg { background-color: #cbd5e1 !important; }
         html.light .text-slate-100 { color: #0f172a !important; }
-        html.light .text-slate-200 { color: #1e293b !important; }
+        html.light .text-slate-200 { color: #0f172a !important; }
         html.light .text-slate-300 { color: #334155 !important; }
-        html.light .text-slate-400 { color: #64748b !important; }
-        html.light .text-slate-500 { color: #475569 !important; }
+        html.light .text-slate-400 { color: #475569 !important; }
+        html.light .text-slate-500 { color: #334155 !important; }
       </style>
     </head>
     <body class="min-h-screen p-6 md:p-12">
@@ -168,9 +177,9 @@ app.get('/', async (req: Request, res: Response) => {
           <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-gradient-to-tr from-sky-500/20 via-indigo-500/15 to-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
           
           <div class="max-w-4xl mx-auto space-y-6 relative z-10 flex flex-col items-center">
-            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20 text-xs font-bold uppercase tracking-wider shadow-sm">
+            <div id="hero-badge-container" class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20 text-xs font-bold uppercase tracking-wider shadow-sm">
               <span class="w-2 h-2 rounded-full bg-sky-400 animate-ping"></span>
-              <span id="hero-badge">B2B2C SaaS Platform</span>
+              <span id="hero-badge">Presence Platform</span>
             </div>
             
             <h2 id="hero-headline" class="text-3xl md:text-5xl font-black tracking-tight leading-tight bg-gradient-to-r from-slate-100 via-sky-200 to-indigo-200 bg-clip-text text-transparent">
@@ -347,7 +356,7 @@ app.get('/', async (req: Request, res: Response) => {
 
         const I18N = {
           en: {
-            heroBadge: 'B2B2C SaaS Platform',
+            heroBadge: 'Presence Platform',
             heroHeadline: 'Contextual Scripture Infrastructure for Workspaces & Apps',
             heroSubheadline: 'Presence delivers timely biblical wisdom, prayer, and devotionals directly inside IDEs, mobile apps, and developer workflows.',
             dashboardTitle: '📊 Mission Control Dashboard',
@@ -397,7 +406,7 @@ app.get('/', async (req: Request, res: Response) => {
             }
           },
           es: {
-            heroBadge: 'Plataforma SaaS B2B2C',
+            heroBadge: 'Presence Platform',
             heroHeadline: 'Infraestructura de Escrituras Contextuales para Entornos de Trabajo y Apps',
             heroSubheadline: 'Presence entrega sabiduría bíblica, oración y devocionales directamente dentro de IDEs, aplicaciones móviles y flujos de trabajo.',
             dashboardTitle: '📊 Panel de Control (Mission Control)',
