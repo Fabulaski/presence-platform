@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
-import { addElementAtCursor } from "@canva/design";
+import { addElementAtPoint, addElementAtCursor } from "@canva/design";
 import type { DesignEditorIntent } from "@canva/intents/design";
 import { prepareDesignEditor } from "@canva/intents/design";
 
@@ -131,12 +131,19 @@ function PresenceCanvaApp() {
     if (!experience) return;
     const textContent = `"${experience.scripture?.text}" — ${experience.scripture?.reference}`;
     try {
-      await addElementAtCursor({
+      await addElementAtPoint({
         type: "text",
         children: [textContent]
       } as any);
     } catch (e) {
-      console.log("Canva addElementAtCursor insert:", e);
+      try {
+        await addElementAtCursor({
+          type: "text",
+          children: [textContent]
+        } as any);
+      } catch (err) {
+        console.log("Canva element insert fallback:", err);
+      }
     }
     alert(txt.insertOk);
   }
