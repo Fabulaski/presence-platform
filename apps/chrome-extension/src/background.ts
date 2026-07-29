@@ -1,3 +1,8 @@
+// Polyfill process object for Chrome Manifest V3 Service Worker
+if (typeof (globalThis as any).process === 'undefined') {
+  (globalThis as any).process = { env: { NODE_ENV: 'production' } };
+}
+
 import { Presence } from '@presence/sdk';
 
 // Initialize Presence SDK for Chrome Extension

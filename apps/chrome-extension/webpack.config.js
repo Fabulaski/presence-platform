@@ -1,4 +1,5 @@
 import path from 'path';
+import webpack from 'webpack';
 import CopyPlugin from 'copy-webpack-plugin';
 
 export default {
@@ -29,6 +30,13 @@ export default {
     ]
   },
   plugins: [
+    new webpack.DefinePlugin({
+      'process.env': JSON.stringify({
+        NODE_ENV: 'production'
+      }),
+      'process.env.NODE_ENV': JSON.stringify('production'),
+      'process.browser': true
+    }),
     new CopyPlugin({
       patterns: [
         { from: 'public/manifest.json', to: 'manifest.json' },
