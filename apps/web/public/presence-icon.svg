@@ -1,53 +1,68 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
-    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0F172A" />
-      <stop offset="50%" stop-color="#1E1B4B" />
-      <stop offset="100%" stop-color="#312E81" />
+    <!-- Vibrant Blue-Indigo Gradient -->
+    <linearGradient id="blueSquircleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6" />
+      <stop offset="50%" stop-color="#2563EB" />
+      <stop offset="100%" stop-color="#4F46E5" />
     </linearGradient>
-    <linearGradient id="doveGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+
+    <!-- Soft Dove White/Lavender Shading -->
+    <linearGradient id="doveBodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#FFFFFF" />
-      <stop offset="100%" stop-color="#F1F5F9" />
+      <stop offset="70%" stop-color="#F1F5F9" />
+      <stop offset="100%" stop-color="#E2E8F0" />
     </linearGradient>
-    <linearGradient id="branchGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#34D399" />
-      <stop offset="100%" stop-color="#059669" />
+
+    <!-- Wing Shadow/Depth -->
+    <linearGradient id="wingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#CBD5E1" />
     </linearGradient>
-    <linearGradient id="goldGlow" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FBBF24" />
+
+    <!-- Olive Branch Green -->
+    <linearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4ADE80" />
+      <stop offset="100%" stop-color="#16A34A" />
+    </linearGradient>
+
+    <!-- Yellow Beak -->
+    <linearGradient id="beakGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FCD34D" />
       <stop offset="100%" stop-color="#F59E0B" />
     </linearGradient>
   </defs>
 
-  <!-- Background Card -->
-  <rect width="512" height="512" rx="120" ry="120" fill="url(#bgGrad)" />
+  <!-- Full Canvas Squircle (No Outer Dark Margin) -->
+  <rect width="512" height="512" rx="128" ry="128" fill="url(#blueSquircleGrad)" />
 
-  <!-- Gold Inner Halo -->
-  <circle cx="256" cy="240" r="150" fill="url(#goldGlow)" opacity="0.18" />
+  <!-- Olive Branch in Beak (stem extending down-left) -->
+  <path d="M 215,245 C 195,265 185,295 190,320" stroke="url(#leafGrad)" stroke-width="8" stroke-linecap="round" fill="none" />
+  <!-- Olive Leaves -->
+  <path d="M 205,255 C 185,245 180,265 200,270 Z" fill="url(#leafGrad)" />
+  <path d="M 195,275 C 175,275 180,295 198,290 Z" fill="url(#leafGrad)" />
+  <path d="M 190,295 C 170,305 185,320 200,308 Z" fill="url(#leafGrad)" />
+  <path d="M 210,265 C 225,250 230,270 212,275 Z" fill="url(#leafGrad)" />
+  <path d="M 200,285 C 218,280 220,300 202,298 Z" fill="url(#leafGrad)" />
 
-  <!-- Olive Branch in Beak -->
-  <path d="M 280,240 C 315,225 355,230 380,215" stroke="url(#branchGrad)" stroke-width="7" stroke-linecap="round" fill="none" />
-  <!-- Leaves -->
-  <path d="M 315,232 C 308,215 328,210 332,225 Z" fill="url(#branchGrad)" />
-  <path d="M 338,228 C 345,210 362,212 352,226 Z" fill="url(#branchGrad)" />
-  <path d="M 358,222 C 362,205 378,206 372,220 Z" fill="url(#branchGrad)" />
-  <path d="M 376,218 C 385,206 395,215 382,224 Z" fill="url(#branchGrad)" />
+  <!-- Back Wing (Upward Left) -->
+  <path d="M 255,215 C 240,165 250,135 285,125 C 300,150 290,195 255,215 Z" fill="url(#wingGrad)" opacity="0.9" />
 
-  <!-- Left Wing (Spread) -->
-  <path d="M 215,235 C 165,150 95,130 65,155 C 100,200 160,245 215,255 Z" fill="url(#doveGrad)" opacity="0.9" />
+  <!-- Main Front Wing (Spread Upward Right) -->
+  <path d="M 265,210 C 275,140 320,110 365,120 C 355,165 315,220 265,210 Z" fill="url(#doveBodyGrad)" />
 
-  <!-- Right Wing (Soaring) -->
-  <path d="M 230,215 C 250,120 325,75 368,80 C 320,130 265,190 230,215 Z" fill="url(#doveGrad)" />
+  <!-- Soft Head and Neck -->
+  <circle cx="230" cy="210" r="32" fill="url(#doveBodyGrad)" />
 
-  <!-- Body & Head -->
-  <path d="M 175,255 C 135,265 100,285 75,320 C 120,305 160,295 195,275 C 225,290 265,285 290,265 C 300,255 302,238 292,230 C 280,218 262,215 245,222 C 215,230 190,245 175,255 Z" fill="url(#doveGrad)" />
+  <!-- Beak (Yellow) -->
+  <path d="M 215,215 L 195,222 L 215,228 Z" fill="url(#beakGrad)" />
 
-  <!-- Tail Feathers -->
-  <path d="M 125,300 C 90,328 55,340 38,358 C 65,345 92,322 135,300 Z" fill="url(#doveGrad)" opacity="0.8" />
+  <!-- Eye (Soft Grey/Blue) -->
+  <circle cx="225" cy="206" r="4" fill="#334155" />
 
-  <!-- Eye -->
-  <circle cx="278" cy="232" r="4" fill="#0F172A" />
+  <!-- Plump Soft Body -->
+  <path d="M 235,225 C 205,245 220,290 265,305 C 310,320 360,290 375,250 C 355,235 315,225 265,210 Z" fill="url(#doveBodyGrad)" />
 
-  <!-- Beak -->
-  <path d="M 288,236 L 302,242 L 288,245 Z" fill="url(#goldGlow)" />
+  <!-- Soft Rounded Tail -->
+  <path d="M 355,270 C 385,285 405,290 415,280 C 400,305 375,310 345,295 Z" fill="url(#doveBodyGrad)" opacity="0.9" />
 </svg>

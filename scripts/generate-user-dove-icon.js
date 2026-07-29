@@ -1,4 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+import fs from 'fs';
+import path from 'path';
+
+// Exact SVG recreation of the user's icon: Vibrant Blue Squircle with Soft White Dove & Green Olive Branch
+const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
     <!-- Vibrant Blue-Indigo Gradient -->
     <linearGradient id="blueSquircleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -65,4 +69,19 @@
 
   <!-- Soft Rounded Tail -->
   <path d="M 355,270 C 385,285 405,290 415,280 C 400,305 375,310 345,295 Z" fill="url(#doveBodyGrad)" opacity="0.9" />
-</svg>
+</svg>`;
+
+const iconPaths = [
+  path.join(process.cwd(), 'apps', 'chrome-extension', 'public', 'icons', 'presence-icon.svg'),
+  path.join(process.cwd(), 'apps', 'canva-app', 'src', 'presence-icon.svg'),
+  path.join(process.cwd(), 'apps', 'web', 'public', 'presence-icon.svg'),
+  path.join(process.cwd(), 'apps', 'vscode-extension', 'presence-icon.svg'),
+  path.join(process.cwd(), 'public', 'icons', 'presence-icon.svg')
+];
+
+iconPaths.forEach(p => {
+  const dir = path.dirname(p);
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(p, svgContent, 'utf-8');
+  console.log(`✅ Saved user dove SVG icon to: ${p}`);
+});
