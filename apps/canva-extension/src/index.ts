@@ -39,6 +39,20 @@ app.post('/api/inspiration', async (req: express.Request, res: express.Response)
       language: language || 'es'
     });
 
+    // Sincronizar silenciosamente en segundo plano con Mission Control Dashboard (puerto 3000)
+    if (experience) {
+      fetch('http://localhost:3000/api/v1/experience', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          experience,
+          activity: activity || 'canva_design',
+          appId: 'Canva Extension',
+          userId: userId || 'canva_designer_session'
+        })
+      }).catch(() => {});
+    }
+
     return res.json({ success: true, experience });
   } catch (error: any) {
     return res.status(500).json({ success: false, error: error.message });

@@ -410,12 +410,15 @@ app.get('/', async (req: Request, res: Response) => {
               vscode_coding: 'Coding',
               coding_in_python: 'Python Coding',
               coding_in_javascript: 'JavaScript Coding',
-              coding_in_typescript: 'TypeScript Coding'
+              coding_in_typescript: 'TypeScript Coding',
+              canva_design: 'Canva Design',
+              editing_canva_reel: 'Canva Video / Reel'
             },
             apps: {
               'Sistema Inicial': 'Initial System',
               'VS Code Extension': 'VS Code Extension',
-              'Extensión VS Code': 'VS Code Extension'
+              'Extensión VS Code': 'VS Code Extension',
+              'Canva Extension': 'Canva App'
             }
           },
           es: {
@@ -460,12 +463,15 @@ app.get('/', async (req: Request, res: Response) => {
               vscode_coding: 'Programación',
               coding_in_python: 'Programación en Python',
               coding_in_javascript: 'Programación en JavaScript',
-              coding_in_typescript: 'Programación en TypeScript'
+              coding_in_typescript: 'Programación en TypeScript',
+              canva_design: 'Diseño en Canva',
+              editing_canva_reel: 'Creación Reel / Video'
             },
             apps: {
               'Sistema Inicial': 'Sistema Inicial',
               'VS Code Extension': 'Extensión VS Code',
-              'Extensión VS Code': 'Extensión VS Code'
+              'Extensión VS Code': 'Extensión VS Code',
+              'Canva Extension': 'Extensión Canva'
             }
           }
         };
