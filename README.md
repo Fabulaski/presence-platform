@@ -200,6 +200,10 @@ if (experience) {
 ## 📻 Ejecución de las Aplicaciones Demo & Extensiones
 
 ```bash
+# Extensión para Google Chrome (Manifest V3 - Notificaciones & SidePanel Proactivos)
+pnpm --filter @presence/chrome-extension build
+# Carga el directorio 'apps/chrome-extension/dist' en chrome://extensions en Modo Desarrollador
+
 # Extensión / App para Canva (Inspiración & Lienzo)
 pnpm --filter @presence/canva-extension dev
 
