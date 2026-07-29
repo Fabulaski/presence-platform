@@ -7,6 +7,19 @@ const PORT = process.env.PORT || 3005;
 
 app.use(express.json());
 
+// Middleware for Canva iframe embedding & CORS
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  // Allow iframe embedding inside Canva.com
+  res.setHeader('Content-Security-Policy', "frame-ancestors 'self' https://*.canva.com https://canva.com http://localhost:* https://*.loca.lt https://*.ngrok-free.app");
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
+
 // Initialize Presence SDK for Canva Platform
 const presence = Presence.initialize({
   apiKey: 'pk_live_canva_extension_app',
