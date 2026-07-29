@@ -13,7 +13,7 @@ module.exports = (env, argv) => {
   // backend: sin mixed content y sin CORS.
   // En produccion Canva sirve la app desde su propio dominio, por lo que hace
   // falta una URL absoluta y obligatoriamente HTTPS.
-  const backendHost = isProduction ? process.env.BACKEND_HOST || "" : "";
+  const backendHost = isProduction ? process.env.BACKEND_HOST || "" : "https://localhost:8081";
 
   if (isProduction) {
     if (!backendHost) {
