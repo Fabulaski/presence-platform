@@ -52,6 +52,25 @@ importers:
         specifier: ^5.4.5
         version: 5.9.3
 
+  apps/canva-extension:
+    dependencies:
+      '@presence/sdk':
+        specifier: workspace:*
+        version: link:../../packages/sdk
+      express:
+        specifier: ^4.19.2
+        version: 4.22.2
+    devDependencies:
+      '@types/express':
+        specifier: ^4.17.21
+        version: 4.17.25
+      '@types/node':
+        specifier: ^20.12.7
+        version: 20.19.43
+      typescript:
+        specifier: ^5.4.5
+        version: 5.9.3
+
   apps/creator-demo:
     dependencies:
       '@presence/sdk':

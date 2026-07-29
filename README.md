@@ -77,6 +77,7 @@ presence-platform/
 │   ├── api/               # REST API Server Express (OpenAPI 3.1 + Scalar GUI /docs)
 │   ├── web/               # Landing Page, Mission Control Dashboard en vivo y Presence Studio
 │   ├── vscode-extension/  # Extensión Oficial de VS Code (.vsix empaquetado autónomo)
+│   ├── canva-extension/   # Extensión Oficial para Canva (Inspiración & Inserción en Lienzo)
 │   ├── widget/            # Componente embebible en HTML/JS (Script tag)
 │   ├── creator-demo/      # Demo interactiva para editores de contenido/reels
 │   ├── radio-demo/        # Demo interactiva para reproductores de streaming cristiano
@@ -196,9 +197,12 @@ if (experience) {
 
 ---
 
-## 📻 Ejecución de las Aplicaciones Demo
+## 📻 Ejecución de las Aplicaciones Demo & Extensiones
 
 ```bash
+# Extensión / App para Canva (Inspiración & Lienzo)
+pnpm --filter @presence/canva-extension dev
+
 # Demo Creadores (Edición de Video / Reels)
 pnpm --filter @presence/creator-demo dev
 
