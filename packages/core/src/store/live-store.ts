@@ -4,6 +4,7 @@ export interface LiveStoreItem extends ExperienceObject {
   appName?: string;
   activity?: string;
   latencyMs?: number;
+  userId?: string;
 }
 
 export class LiveExperienceStore {
@@ -47,14 +48,15 @@ export class LiveExperienceStore {
     return LiveExperienceStore.instance;
   }
 
-  public addExperience(exp: ExperienceObject, appName?: string, activity?: string, latencyMs?: number) {
+  public addExperience(exp: ExperienceObject, appName?: string, activity?: string, latencyMs?: number, userId?: string) {
     this.experiences.unshift({
       ...exp,
       appName: appName || 'VS Code Extension',
       activity,
-      latencyMs: latencyMs || Math.floor(320 + Math.random() * 180)
+      latencyMs: latencyMs || Math.floor(320 + Math.random() * 180),
+      userId: userId || (exp as any).userId
     });
-    if (this.experiences.length > 50) {
+    if (this.experiences.length > 100) {
       this.experiences.pop();
     }
   }
@@ -63,17 +65,20 @@ export class LiveExperienceStore {
     this.shareCount++;
   }
 
-  public getExperiences(): LiveStoreItem[] {
-    return this.experiences;
+  public getExperiences(userId?: string): LiveStoreItem[] {
+    if (!userId) return this.experiences;
+    const filtered = this.experiences.filter(e => !e.userId || e.userId === userId);
+    return filtered.length > 0 ? filtered : this.experiences;
   }
 
-  public getMetrics() {
-    const total = this.experiences.length;
+  public getMetrics(userId?: string) {
+    const list = this.getExperiences(userId);
+    const total = list.length;
     const needCounts: Record<string, number> = {};
     let totalLatency = 0;
     let validLatencyCount = 0;
 
-    this.experiences.forEach((e) => {
+    list.forEach((e) => {
       needCounts[e.need] = (needCounts[e.need] || 0) + 1;
       if (e.latencyMs) {
         totalLatency += e.latencyMs;
@@ -118,14 +123,15 @@ export class LiveExperienceStore {
   }
 
   /** Returns percentage distribution of all spiritual needs with synchronized YouVersion plan links */
-  public getNeedDistribution(): Array<{
+  public getNeedDistribution(userId?: string): Array<{
     need: string;
     label: string;
     count: number;
     percent: number;
     latestPlan: { title: string; url: string };
   }> {
-    const total = this.experiences.length || 1;
+    const list = this.getExperiences(userId);
+    const total = list.length || 1;
     const needCounts: Record<string, number> = {};
     const needLatestPlan: Record<string, { title: string; url: string }> = {};
 
@@ -140,7 +146,7 @@ export class LiveExperienceStore {
       joy:          { title: 'El Gozo del Señor es tu Fuerza', url: 'https://www.bible.com/search/plans?query=gozo' }
     };
 
-    this.experiences.forEach((e) => {
+    list.forEach((e) => {
       needCounts[e.need] = (needCounts[e.need] || 0) + 1;
       if (!needLatestPlan[e.need] && e.youVersionPlan) {
         needLatestPlan[e.need] = {
@@ -169,3 +175,4 @@ export class LiveExperienceStore {
       .sort((a, b) => b.percent - a.percent);
   }
 }
+

@@ -44,10 +44,10 @@ app.post('/api/v1/context', async (req: Request, res: Response) => {
 // appears on the dashboard — no re-generation, perfect synchronization.
 app.post('/api/v1/experience', (req: Request, res: Response) => {
   try {
-    const { experience, activity, appId } = req.body;
+    const { experience, activity, appId, userId } = req.body;
     if (experience && experience.scripture) {
-      LiveExperienceStore.getInstance().addExperience(experience, appId || 'VS Code Extension', activity || 'coding');
-      console.log(`[Presence Web] ✅ Synced experience from ${appId}: "${experience.title}" — ${experience.scripture.reference}`);
+      LiveExperienceStore.getInstance().addExperience(experience, appId || 'VS Code Extension', activity || 'coding', undefined, userId);
+      console.log(`[Presence Web] ✅ Synced experience for user [${userId || 'global'}] from ${appId}: "${experience.title}" — ${experience.scripture.reference}`);
       res.json({ success: true, synced: true });
     } else {
       res.status(400).json({ error: 'Missing experience data' });
@@ -57,14 +57,17 @@ app.post('/api/v1/experience', (req: Request, res: Response) => {
   }
 });
 
-// API endpoint for live stream polling
+// API endpoint for live stream polling with devId filtering support
 app.get('/api/v1/live-stream', (req: Request, res: Response) => {
+  const devId = (req.query.devId as string) || undefined;
   const store = LiveExperienceStore.getInstance();
+  const list = store.getExperiences(devId);
   res.json({
-    metrics: store.getMetrics(),
-    experiences: store.getExperiences(),
-    latestExperience: store.getExperiences()[0] || null,
-    needDistribution: store.getNeedDistribution()
+    devId,
+    metrics: store.getMetrics(devId),
+    experiences: list,
+    latestExperience: list[0] || null,
+    needDistribution: store.getNeedDistribution(devId)
   });
 });
 
@@ -155,6 +158,11 @@ app.get('/', async (req: Request, res: Response) => {
             </div>
           </div>
           <div class="flex items-center space-x-3 text-xs font-semibold">
+            <!-- Developer Session Badge -->
+            <span id="user-session-badge" class="hidden px-3 py-2 rounded-lg bg-sky-500/10 text-sky-400 border border-sky-500/30 flex items-center gap-1.5 font-mono">
+              👤 <span id="user-session-text">Personal Session</span>
+            </span>
+
             <!-- Language Toggle Button -->
             <button id="btn-lang-toggle" onclick="toggleLanguage()" class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-sky-400 border border-slate-700 transition flex items-center gap-1.5 cursor-pointer">
               🌐 <span id="lang-btn-text">EN 🇬🇧</span>
@@ -597,7 +605,18 @@ app.get('/', async (req: Request, res: Response) => {
         // Real-time polling
         async function fetchLiveStream() {
           try {
-            const res = await fetch('/api/v1/live-stream');
+            const urlParams = new URLSearchParams(window.location.search);
+            const devId = urlParams.get('devId');
+            
+            const badge = document.getElementById('user-session-badge');
+            const badgeText = document.getElementById('user-session-text');
+            if (devId && badge && badgeText) {
+              badge.classList.remove('hidden');
+              badgeText.textContent = 'Dev ID: ' + devId.substring(0, 10) + '…';
+            }
+
+            const fetchUrl = devId ? '/api/v1/live-stream?devId=' + encodeURIComponent(devId) : '/api/v1/live-stream';
+            const res = await fetch(fetchUrl);
             if (!res.ok) return;
             const data = await res.json();
             const t = I18N[currentLang] || I18N['en'];

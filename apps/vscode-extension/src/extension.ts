@@ -89,6 +89,7 @@ export function activate(context: vscode.ExtensionContext) {
    * is what appears on the dashboard — no re-generation.
    */
   const syncExperienceToDashboard = async (experience: any, activity: string) => {
+    const devId = vscode.env.machineId;
     const ports = [3000, 3005, 3001];
     for (const port of ports) {
       try {
@@ -98,6 +99,7 @@ export function activate(context: vscode.ExtensionContext) {
           body: JSON.stringify({
             experience,
             activity,
+            userId: devId,
             appId: 'VS Code Extension'
           })
         });
@@ -113,6 +115,7 @@ export function activate(context: vscode.ExtensionContext) {
     const fileName = editor ? editor.document.fileName.split(/[\\/]/).pop() : 'Code Workspace';
     const languageId = editor ? editor.document.languageId : 'typescript';
     const durationSeconds = Math.floor((Date.now() - codingStartTime) / 1000);
+    const devId = vscode.env.machineId;
 
     // Re-detect language dynamically
     const currentLang = vscode.env.language ? vscode.env.language.split('-')[0] : 'en';
@@ -131,7 +134,7 @@ export function activate(context: vscode.ExtensionContext) {
         const topic = `file_${fileName}_duration_${durationSeconds}s`;
 
         const exp = await presence.capture({
-          userId: 'vscode_dev_usr',
+          userId: devId,
           activity,
           topic,
           durationSeconds,
@@ -155,7 +158,7 @@ export function activate(context: vscode.ExtensionContext) {
           panel.webview.onDidReceiveMessage(
             (message) => {
               if (message.command === 'openDashboard') {
-                vscode.env.openExternal(vscode.Uri.parse('http://localhost:3000'));
+                vscode.env.openExternal(vscode.Uri.parse(`http://localhost:3000/?devId=${encodeURIComponent(devId)}`));
               }
             },
             undefined,
@@ -172,7 +175,8 @@ export function activate(context: vscode.ExtensionContext) {
 
   // Command 2: Open Mission Control Dashboard in Browser
   const dashboardCommand = vscode.commands.registerCommand('presence.openDashboard', () => {
-    vscode.env.openExternal(vscode.Uri.parse('http://localhost:3000'));
+    const devId = vscode.env.machineId;
+    vscode.env.openExternal(vscode.Uri.parse(`http://localhost:3000/?devId=${encodeURIComponent(devId)}`));
   });
 
   context.subscriptions.push(captureCommand, dashboardCommand);
