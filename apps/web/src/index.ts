@@ -158,9 +158,9 @@ app.get('/', async (req: Request, res: Response) => {
             </div>
           </div>
           <div class="flex items-center space-x-3 text-xs font-semibold">
-            <!-- Developer Session Badge -->
-            <span id="user-session-badge" class="hidden px-3 py-2 rounded-lg bg-sky-500/10 text-sky-400 border border-sky-500/30 flex items-center gap-1.5 font-mono">
-              👤 <span id="user-session-text">Personal Session</span>
+            <!-- Developer Session Badge (Always Visible) -->
+            <span id="user-session-badge" class="px-3 py-2 rounded-lg bg-sky-500/10 text-sky-400 border border-sky-500/30 flex items-center gap-1.5 font-mono shadow-sm">
+              👤 <span id="user-session-text">Dev ID: Active Session</span>
             </span>
 
             <!-- Language Toggle Button -->
@@ -214,8 +214,13 @@ app.get('/', async (req: Request, res: Response) => {
 
         <!-- Mission Control Dashboard -->
         <section class="space-y-6">
-          <div class="flex justify-between items-center">
-            <h3 id="lbl-dash-title" class="text-2xl font-bold flex items-center gap-2">📊 Mission Control Dashboard</h3>
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+              <h3 id="lbl-dash-title" class="text-2xl font-bold flex items-center gap-2">📊 Mission Control Dashboard</h3>
+              <div id="session-info-banner" class="mt-1 flex items-center gap-2 text-xs text-sky-400 font-mono">
+                <span>🔑 <strong id="lbl-session-dev-id">Personal Developer Session:</strong> <span id="session-id-display">Connecting...</span></span>
+              </div>
+            </div>
             <span class="text-xs text-slate-400 flex items-center gap-1.5">
               <span class="w-2 h-2 rounded-full bg-sky-400 animate-ping"></span> <span id="lbl-live-updating-sec">Updating live every 2s</span>
             </span>
@@ -575,6 +580,7 @@ app.get('/', async (req: Request, res: Response) => {
 
           const setTxt = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
           setTxt('lbl-dash-title', t.dashboardTitle);
+          setTxt('lbl-session-dev-id', lang === 'es' ? 'Sesión Personal de Desarrollador:' : 'Personal Developer Session:');
           setTxt('lbl-live-updating-sec', t.liveUpdatingSec);
           setTxt('lbl-stat-exp-title', t.experiencesToday);
           setTxt('lbl-stat-lat-title', t.avgApiLatency);
@@ -608,11 +614,16 @@ app.get('/', async (req: Request, res: Response) => {
             const urlParams = new URLSearchParams(window.location.search);
             const devId = urlParams.get('devId');
             
-            const badge = document.getElementById('user-session-badge');
             const badgeText = document.getElementById('user-session-text');
-            if (devId && badge && badgeText) {
-              badge.classList.remove('hidden');
-              badgeText.textContent = 'Dev ID: ' + devId.substring(0, 10) + '…';
+            const displayBanner = document.getElementById('session-id-display');
+
+            if (devId) {
+              const shortId = devId.length > 12 ? devId.substring(0, 10) + '…' : devId;
+              if (badgeText) badgeText.textContent = 'Dev ID: ' + shortId;
+              if (displayBanner) displayBanner.textContent = devId;
+            } else {
+              if (badgeText) badgeText.textContent = currentLang === 'es' ? 'Sesión: VS Code' : 'Session: VS Code';
+              if (displayBanner) displayBanner.textContent = currentLang === 'es' ? 'Extensión VS Code (Global)' : 'VS Code Extension (Global)';
             }
 
             const fetchUrl = devId ? '/api/v1/live-stream?devId=' + encodeURIComponent(devId) : '/api/v1/live-stream';
