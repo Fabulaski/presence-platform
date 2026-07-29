@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
+import { addNativeElement } from "@canva/design";
 
 // ── Presence Canva App Component ──
 function PresenceCanvaApp() {
@@ -81,21 +82,26 @@ function PresenceCanvaApp() {
     }
   }
 
-  function handleInsert() {
+  async function handleInsert() {
     if (!experience) return;
-    // For native Canva SDK integration, this would call:
-    // addNativeElement({ type: "TEXT", children: [experience.scripture.text] });
-    // For now, we use postMessage to communicate with parent Canva frame
     try {
-      window.parent.postMessage(
-        {
-          type: "presence_insert_text",
-          text: `"${experience.scripture?.text}" — ${experience.scripture?.reference}`,
-        },
-        "*"
-      );
+      await addNativeElement({
+        type: "text",
+        children: [
+          `"${experience.scripture?.text}" — ${experience.scripture?.reference}`
+        ]
+      } as any);
     } catch (e) {
-      console.log("Insert event dispatched");
+      console.log("Canva native insert fallback:", e);
+      try {
+        window.parent.postMessage(
+          {
+            type: "presence_insert_text",
+            text: `"${experience.scripture?.text}" — ${experience.scripture?.reference}`,
+          },
+          "*"
+        );
+      } catch (err) {}
     }
     alert(txt.insertOk);
   }

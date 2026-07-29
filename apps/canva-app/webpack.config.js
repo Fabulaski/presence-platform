@@ -30,6 +30,7 @@ module.exports = {
     ],
   },
   devServer: {
+    server: 'https',
     static: path.resolve(__dirname, "dist"),
     port: 8081,
     hot: true,

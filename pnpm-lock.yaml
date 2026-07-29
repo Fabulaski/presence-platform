@@ -54,6 +54,9 @@ importers:
 
   apps/canva-app:
     dependencies:
+      '@canva/design':
+        specifier: ^2.10.1
+        version: 2.10.1(@canva/error@2.2.1)
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -285,6 +288,14 @@ importers:
         version: 5.9.3
 
 packages:
+
+  '@canva/design@2.10.1':
+    resolution: {integrity: sha512-Jre3LPrNcPIuNH2aNkbYB3NjuXkr1CrhotyOtBLA/sPKoVuqi54cdZLYBTaFHnVzmGkvNedLeJ4Gvp5xtyQ4tw==}
+    peerDependencies:
+      '@canva/error': ^2.0.0
+
+  '@canva/error@2.2.1':
+    resolution: {integrity: sha512-b5GQMggNaLqtQdN4ENXx2PifFNTO9Ulw8TEwbMZjbPmLS7cAQPfQvXqb0SwPcQ2LQhCIanErrcpOPxQ4s60QNA==}
 
   '@discoveryjs/json-ext@0.5.7':
     resolution: {integrity: sha512-dBVuXR082gk3jsFp7Rd/JI4kytwGHecnCoTtXFb7DB6CNHp4rg5k1bhg0nWdLGLnOV71lmDzGQaLMy8iPLY0pw==}
@@ -2143,6 +2154,12 @@ packages:
     engines: {node: '>=18'}
 
 snapshots:
+
+  '@canva/design@2.10.1(@canva/error@2.2.1)':
+    dependencies:
+      '@canva/error': 2.2.1
+
+  '@canva/error@2.2.1': {}
 
   '@discoveryjs/json-ext@0.5.7': {}
 
