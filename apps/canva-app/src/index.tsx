@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
 import { addNativeElement } from "@canva/design";
+import type { DesignEditorIntent } from "@canva/intents/design";
 import { prepareDesignEditor } from "@canva/intents/design";
+
+// Inyectado por webpack.DefinePlugin. Vacio en desarrollo (rutas relativas que
+// pasan por el proxy HTTPS del dev server); URL HTTPS absoluta en produccion.
+declare const BACKEND_HOST: string;
 
 // ── Render Function for Canva Intent ──
 let root: any = null;
@@ -16,14 +21,21 @@ async function render() {
   }
 }
 
+const designEditor: DesignEditorIntent = { render };
+
 try {
-  prepareDesignEditor({ render });
+  prepareDesignEditor(designEditor);
 } catch (e) {
   console.log("prepareDesignEditor init:", e);
 }
 
-// Fallback direct render for standalone browser view
-render();
+// Fuera de Canva (preview directo en el navegador) nadie llama a render(),
+// asi que lo hacemos nosotros. Dentro de Canva lo invoca el propio intent.
+if (typeof (window as any).canva_sdk === "undefined") {
+  render();
+}
+
+export default designEditor;
 
 // ── Presence Canva App Component ──
 function PresenceCanvaApp() {
@@ -32,6 +44,7 @@ function PresenceCanvaApp() {
   const [loading, setLoading] = useState(false);
   const [selectedMode, setSelectedMode] = useState("creative_block");
   const [experience, setExperience] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const t = {
     es: {
@@ -50,6 +63,7 @@ function PresenceCanvaApp() {
       openYV: "📖 Abrir Plan Devocional YouVersion →",
       footer: "Scripture in New Frontiers",
       insertOk: "¡Cita lista para el lienzo!",
+      errorApi: "No se pudo conectar con el servicio Presence. Revisa que el backend esté activo.",
     },
     en: {
       title: "Presence Platform",
@@ -67,6 +81,7 @@ function PresenceCanvaApp() {
       openYV: "📖 Open YouVersion Devotional →",
       footer: "Scripture in New Frontiers",
       insertOk: "Quote ready for canvas!",
+      errorApi: "Could not reach the Presence service. Check that the backend is running.",
     },
   };
 
@@ -84,8 +99,9 @@ function PresenceCanvaApp() {
 
   async function handleInspiration() {
     setLoading(true);
+    setError(null);
     try {
-      const res = await fetch("http://localhost:3005/api/inspiration", {
+      const res = await fetch(`${BACKEND_HOST}/api/inspiration`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -94,12 +110,18 @@ function PresenceCanvaApp() {
           language: lang,
         }),
       });
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
       const data = await res.json();
       if (data.success && data.experience) {
         setExperience(data.experience);
+      } else {
+        throw new Error(data.error || "respuesta sin experiencia");
       }
     } catch (err) {
       console.error("Presence API error:", err);
+      setError(txt.errorApi);
     } finally {
       setLoading(false);
     }
@@ -271,6 +293,24 @@ function PresenceCanvaApp() {
       >
         {loading ? txt.btnLoading : txt.btnAction}
       </button>
+
+      {/* Error Banner */}
+      {error && (
+        <div
+          style={{
+            background: "#7f1d1d30",
+            border: "1px solid #ef444460",
+            borderRadius: "10px",
+            padding: "10px 12px",
+            marginBottom: "14px",
+            fontSize: "11px",
+            lineHeight: 1.5,
+            color: isDark ? "#fca5a5" : "#b91c1c",
+          }}
+        >
+          ⚠️ {error}
+        </div>
+      )}
 
       {/* Experience Card */}
       {experience && (
