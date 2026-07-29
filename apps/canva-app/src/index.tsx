@@ -1,6 +1,29 @@
 import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
 import { addNativeElement } from "@canva/design";
+import { prepareDesignEditor } from "@canva/intents/design";
+
+// ── Render Function for Canva Intent ──
+let root: any = null;
+
+async function render() {
+  const container = document.getElementById("root");
+  if (container) {
+    if (!root) {
+      root = createRoot(container);
+    }
+    root.render(<PresenceCanvaApp />);
+  }
+}
+
+try {
+  prepareDesignEditor({ render });
+} catch (e) {
+  console.log("prepareDesignEditor init:", e);
+}
+
+// Fallback direct render for standalone browser view
+render();
 
 // ── Presence Canva App Component ──
 function PresenceCanvaApp() {
@@ -355,9 +378,4 @@ function PresenceCanvaApp() {
   );
 }
 
-// ── Mount ──
-const container = document.getElementById("root");
-if (container) {
-  const root = createRoot(container);
-  root.render(<PresenceCanvaApp />);
-}
+

@@ -57,6 +57,9 @@ importers:
       '@canva/design':
         specifier: ^2.10.1
         version: 2.10.1(@canva/error@2.2.1)
+      '@canva/intents':
+        specifier: ^2.6.0
+        version: 2.6.0(@canva/error@2.2.1)
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -296,6 +299,11 @@ packages:
 
   '@canva/error@2.2.1':
     resolution: {integrity: sha512-b5GQMggNaLqtQdN4ENXx2PifFNTO9Ulw8TEwbMZjbPmLS7cAQPfQvXqb0SwPcQ2LQhCIanErrcpOPxQ4s60QNA==}
+
+  '@canva/intents@2.6.0':
+    resolution: {integrity: sha512-DMWDB2NK5wnPyWbfPb7javu8RvQVz/V2NgtJNUx+90CPYxBENZdS6c7X5Hh3wWCPRL9sxaGdo12/qQDaGeOX8g==}
+    peerDependencies:
+      '@canva/error': ^2.0.0
 
   '@discoveryjs/json-ext@0.5.7':
     resolution: {integrity: sha512-dBVuXR082gk3jsFp7Rd/JI4kytwGHecnCoTtXFb7DB6CNHp4rg5k1bhg0nWdLGLnOV71lmDzGQaLMy8iPLY0pw==}
@@ -2160,6 +2168,10 @@ snapshots:
       '@canva/error': 2.2.1
 
   '@canva/error@2.2.1': {}
+
+  '@canva/intents@2.6.0(@canva/error@2.2.1)':
+    dependencies:
+      '@canva/error': 2.2.1
 
   '@discoveryjs/json-ext@0.5.7': {}
 
