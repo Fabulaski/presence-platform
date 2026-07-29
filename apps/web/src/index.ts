@@ -68,6 +68,12 @@ app.get('/api/v1/live-stream', (req: Request, res: Response) => {
   });
 });
 
+// API endpoint for tracking user interaction / devotional clicks
+app.post('/api/v1/interact', (req: Request, res: Response) => {
+  LiveExperienceStore.getInstance().trackShare();
+  res.json({ success: true, metrics: LiveExperienceStore.getInstance().getMetrics() });
+});
+
 app.get('/', async (req: Request, res: Response) => {
   const landing = getLandingContent();
   const dashboard = renderDashboardSummary();
@@ -234,7 +240,7 @@ app.get('/', async (req: Request, res: Response) => {
                 <span id="live-plan-title" class="text-xs text-amber-400 font-semibold">
                   📲 Plan YouVersion: ${liveExp?.youVersionPlan?.title || 'Wisdom from Above'}
                 </span>
-                <a id="live-plan-link" href="${liveExp?.youVersionPlan?.url || 'https://www.bible.com/search/plans?query=wisdom'}" target="_blank" rel="noopener noreferrer"
+                <a id="live-plan-link" onclick="trackPlanClick()" href="${liveExp?.youVersionPlan?.url || 'https://www.bible.com/search/plans?query=wisdom'}" target="_blank" rel="noopener noreferrer"
                    class="px-3 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 border border-amber-500/20 text-xs font-semibold transition">
                   Open Devotional →
                 </a>
@@ -315,7 +321,7 @@ app.get('/', async (req: Request, res: Response) => {
                     <div class="w-full progress-bg rounded-full h-2.5 mb-3">
                       <div class="${c.bar} h-2.5 rounded-full transition-all duration-700 ease-out" style="width: ${d.percent}%"></div>
                     </div>
-                    <a href="${plan.url}" target="_blank" rel="noopener noreferrer"
+                    <a href="${plan.url}" onclick="trackPlanClick()" target="_blank" rel="noopener noreferrer"
                        class="inline-flex items-center gap-1.5 text-xs font-medium ${c.text} hover:underline transition">
                       📖 Plan YouVersion: ${plan.title} →
                     </a>
@@ -335,6 +341,10 @@ app.get('/', async (req: Request, res: Response) => {
 
       <!-- Real-time Polling & Dynamic i18n / Theme Script -->
       <script>
+        function trackPlanClick() {
+          fetch('/api/v1/interact', { method: 'POST' }).then(() => fetchLiveStream()).catch(() => {});
+        }
+
         const I18N = {
           en: {
             heroBadge: 'B2B2C SaaS Platform',
@@ -438,6 +448,76 @@ app.get('/', async (req: Request, res: Response) => {
           }
         };
 
+        // Automatic Experience Translation Helper
+        function formatExperienceForLang(exp, lang) {
+          if (!exp) return exp;
+          const translated = JSON.parse(JSON.stringify(exp));
+
+          if (lang === 'es') {
+            let t = translated.title || '';
+            if (t.toLowerCase().includes('coding with divine wisdom') || t.toLowerCase().includes('coding with wisdom')) t = 'Programando con Sabiduría Divina';
+            else if (t.toLowerCase().includes('rest for the weary')) t = 'Descanso para el Programador Cansado';
+            else if (t.toLowerCase().includes('code with trust')) t = 'Programa con Confianza';
+            else if (t.toLowerCase().includes('pause for the mind')) t = 'Pausa para la Mente';
+            else if (t.toLowerCase().includes('stillness')) t = 'Quietud en la Sintaxis';
+            translated.title = t;
+
+            let r = translated.reflection || '';
+            if (r.includes('As you work through') || r.includes('demo.py')) {
+              r = 'Mientras trabajas en el módulo demo.py esta tarde, recuerda que los desafíos y errores que encuentras son oportunidades para buscar sabiduría más allá de tu propio entendimiento. Santiago 1:5 nos recuerda que Dios da sabiduría generosamente a quienes se la piden sin reproche. Deja que esto te anime a hacer una pausa e invitar la guía de Dios al resolver problemas, confiando en que la claridad llegará a su debido tiempo.';
+            }
+            translated.reflection = r;
+
+            if (translated.scripture) {
+              if (translated.scripture.reference === 'James 1:5' || translated.scripture.reference === 'James 1:5-6' || translated.scripture.text.includes('lacks wisdom')) {
+                translated.scripture.reference = 'Santiago 1:5';
+                translated.scripture.text = 'Y si alguno de vosotros tiene falta de sabiduría, pídala a Dios, el cual da a todos abundantemente y sin reproche, y le será dada.';
+              } else if (translated.scripture.reference === 'Romans 15:13') {
+                translated.scripture.reference = 'Romanos 15:13';
+                translated.scripture.text = 'Que el Dios de la esperanza los llene de toda alegría y paz a ustedes que confían en él...';
+              }
+            }
+
+            if (translated.youVersionPlan) {
+              if (translated.youVersionPlan.title === 'Wisdom from Above') {
+                translated.youVersionPlan.title = 'Sabiduría de lo Alto';
+              }
+            }
+          } else if (lang === 'en') {
+            let t = translated.title || '';
+            if (t.includes('Un Momento de Esperanza')) t = 'A Moment of Hope';
+            else if (t.includes('Programando con Sabiduría')) t = 'Coding With Divine Wisdom';
+            else if (t.includes('Descanso para el Programador')) t = 'Rest for the Weary Coder';
+            translated.title = t;
+
+            let r = translated.reflection || '';
+            if (r.includes('En medio de tus tareas diarias') || r.includes('inagotable')) {
+              r = 'In the midst of your daily tasks, remember that creativity and rest come from an inexhaustible source.';
+            }
+            translated.reflection = r;
+
+            if (translated.scripture) {
+              if (translated.scripture.reference === 'Romanos 15:13') {
+                translated.scripture.reference = 'Romans 15:13';
+                translated.scripture.text = 'May the God of hope fill you with all joy and peace as you trust in him, so that you may overflow with hope by the power of the Holy Spirit.';
+              } else if (translated.scripture.reference === 'Santiago 1:5') {
+                translated.scripture.reference = 'James 1:5';
+                translated.scripture.text = 'If any of you lacks wisdom, you should ask God, who gives generously to all without finding fault, and it will be given to you.';
+              }
+            }
+
+            if (translated.youVersionPlan) {
+              if (translated.youVersionPlan.title === 'Sabiduría de lo Alto') {
+                translated.youVersionPlan.title = 'Wisdom from Above';
+              } else if (translated.youVersionPlan.title === 'Esperanza Inquebrantable') {
+                translated.youVersionPlan.title = 'Unshakeable Hope';
+              }
+            }
+          }
+
+          return translated;
+        }
+
         // Theme Toggle Logic
         let currentTheme = localStorage.getItem('presence_theme') || 'dark';
 
@@ -524,9 +604,10 @@ app.get('/', async (req: Request, res: Response) => {
               document.getElementById('stat-theme').textContent = needName;
             }
 
-            // Update Live Card
-            const exp = data.latestExperience;
-            if (exp) {
+            // Update Live Card with dynamic language translation
+            const rawExp = data.latestExperience;
+            if (rawExp) {
+              const exp = formatExperienceForLang(rawExp, currentLang);
               const appDisplay = (t.apps && t.apps[exp.appName]) ? t.apps[exp.appName] : (exp.appName || 'VS Code Extension');
               document.getElementById('live-app').textContent = appDisplay;
               document.getElementById('live-confidence').textContent = t.confidenceLabel + ' ' + Math.round((exp.confidence || 0.9) * 100) + '%';
@@ -546,7 +627,8 @@ app.get('/', async (req: Request, res: Response) => {
             // Update Stream Table
             if (data.experiences && Array.isArray(data.experiences)) {
               const tbody = document.getElementById('stream-table-body');
-              tbody.innerHTML = data.experiences.map(e => {
+              tbody.innerHTML = data.experiences.map(rawE => {
+                const e = formatExperienceForLang(rawE, currentLang);
                 const appName = (t.apps && t.apps[e.appName]) ? t.apps[e.appName] : (e.appName || 'VS Code Extension');
                 const activityName = (t.activities && t.activities[e.activity]) ? t.activities[e.activity] : (e.activity || 'coding');
                 const needName = (t.needs && t.needs[e.need]) ? t.needs[e.need] : e.need;
@@ -584,6 +666,9 @@ app.get('/', async (req: Request, res: Response) => {
                   const needLabel = (t.needs && t.needs[d.need]) ? t.needs[d.need] : d.label;
                   const unitLabel = d.count === 1 ? t.timesSingular : t.timesPlural;
                   const planPrefix = currentLang === 'es' ? 'Plan YouVersion' : 'YouVersion Plan';
+                  let planTitle = plan.title;
+                  if (currentLang === 'es' && planTitle === 'Wisdom from Above') planTitle = 'Sabiduría de lo Alto';
+                  if (currentLang === 'en' && planTitle === 'Sabiduría de lo Alto') planTitle = 'Wisdom from Above';
                   return \`
                     <div class="card-inner p-4 rounded-xl border transition">
                       <div class="flex justify-between items-center mb-2">
@@ -596,9 +681,9 @@ app.get('/', async (req: Request, res: Response) => {
                       <div class="w-full progress-bg rounded-full h-2.5 mb-3">
                         <div class="\${c.bar} h-2.5 rounded-full transition-all duration-700 ease-out" style="width: \${d.percent}%"></div>
                       </div>
-                      <a href="\${plan.url}" target="_blank" rel="noopener noreferrer"
+                      <a href="\${plan.url}" onclick="trackPlanClick()" target="_blank" rel="noopener noreferrer"
                          class="inline-flex items-center gap-1.5 text-xs font-medium \${c.text} hover:underline transition">
-                        📖 \${planPrefix}: \${plan.title} →
+                        📖 \${planPrefix}: \${planTitle} →
                       </a>
                     </div>
                   \`;

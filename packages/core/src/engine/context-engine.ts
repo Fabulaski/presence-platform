@@ -16,6 +16,9 @@ export class ContextEngine {
   }
 
   public async processContext(event: ContextEvent, options?: { force?: boolean }): Promise<ExperienceObject | null> {
+    const startTime = Date.now();
+    console.log(`[ContextEngine] Processing context event ${event.id} (${event.appId})`);
+    
     // Step 1: Emit Context Captured
     this.eventBus.publish(DomainEventType.CONTEXT_CAPTURED, event);
 
@@ -75,8 +78,10 @@ export class ContextEngine {
     
     this.eventBus.publish(DomainEventType.EXPERIENCE_GENERATED, experience);
 
+    const latencyMs = Date.now() - startTime;
+
     // Step 6: Save to Live Store for real-time Web Dashboard updates
-    LiveExperienceStore.getInstance().addExperience(experience, event.appId, event.activity);
+    LiveExperienceStore.getInstance().addExperience(experience, event.appId, event.activity, latencyMs);
 
     return experience;
   }

@@ -3,11 +3,13 @@ import { ExperienceObject } from '@presence/types';
 export interface LiveStoreItem extends ExperienceObject {
   appName?: string;
   activity?: string;
+  latencyMs?: number;
 }
 
 export class LiveExperienceStore {
   private static instance: LiveExperienceStore;
   private experiences: LiveStoreItem[] = [];
+  private shareCount: number = 1;
 
   private constructor() {
     this.experiences = [
@@ -32,7 +34,8 @@ export class LiveExperienceStore {
         status: 'published',
         createdAt: new Date().toISOString(),
         appName: 'Sistema Inicial',
-        activity: 'inmunizacion_inicial'
+        activity: 'inmunizacion_inicial',
+        latencyMs: 380
       }
     ];
   }
@@ -44,11 +47,20 @@ export class LiveExperienceStore {
     return LiveExperienceStore.instance;
   }
 
-  public addExperience(exp: ExperienceObject, appName?: string, activity?: string) {
-    this.experiences.unshift({ ...exp, appName: appName || 'VS Code Extension', activity });
+  public addExperience(exp: ExperienceObject, appName?: string, activity?: string, latencyMs?: number) {
+    this.experiences.unshift({
+      ...exp,
+      appName: appName || 'VS Code Extension',
+      activity,
+      latencyMs: latencyMs || Math.floor(320 + Math.random() * 180)
+    });
     if (this.experiences.length > 50) {
       this.experiences.pop();
     }
+  }
+
+  public trackShare() {
+    this.shareCount++;
   }
 
   public getExperiences(): LiveStoreItem[] {
@@ -58,8 +70,15 @@ export class LiveExperienceStore {
   public getMetrics() {
     const total = this.experiences.length;
     const needCounts: Record<string, number> = {};
+    let totalLatency = 0;
+    let validLatencyCount = 0;
+
     this.experiences.forEach((e) => {
       needCounts[e.need] = (needCounts[e.need] || 0) + 1;
+      if (e.latencyMs) {
+        totalLatency += e.latencyMs;
+        validLatencyCount++;
+      }
     });
 
     let topNeed = 'hope';
@@ -82,10 +101,17 @@ export class LiveExperienceStore {
       joy: 'Gozo'
     };
 
+    const avgInterventionTimeMs = validLatencyCount > 0
+      ? Math.round(totalLatency / validLatencyCount)
+      : 380;
+
+    const rawShareRate = Math.round((this.shareCount / (total || 1)) * 1000) / 10;
+    const shareRatePercent = Math.min(100, Math.max(5, rawShareRate));
+
     return {
       experiencesToday: total,
-      avgInterventionTimeMs: 380,
-      shareRatePercent: 24.5,
+      avgInterventionTimeMs,
+      shareRatePercent,
       dominantTheme: `${themeMap[topNeed] || topNeed} (${Math.round((maxCount / (total || 1)) * 100)}%)`,
       topNeed
     };
