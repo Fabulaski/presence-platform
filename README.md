@@ -209,7 +209,6 @@ if (experience) {
 
 ## 📖 Documentación Adicional
 
-- 🏆 [Guión Estructurado del Video de Presentación (Pitch de 3 Minutos)](pitch/VIDEO_PITCH_SCRIPT_3MIN.md)
 - 🏛️ [Especificación de Arquitectura de Software & Diagramas C4 (Contexto, Contenedores, Hexagonal)](docs/ARCHITECTURE_AND_DIAGRAMS.md)
 - 🤖 [Documentación del Motor de IA (Gloo AI Engine) & Prompts del Sistema](docs/GLOO_AI_ENGINE_AND_PROMPTS.md)
 - 📘 [Guía de Integración del SDK Paso a Paso](docs/SDK_INTEGRATION_GUIDE.md)
