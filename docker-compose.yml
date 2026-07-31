@@ -1,37 +1,41 @@
 version: '3.8'
 
 services:
-  presence-db:
-    image: postgres:16-alpine
-    container_name: presence-db
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: presence_password
-      POSTGRES_DB: presence_db
-    ports:
-      - '5432:5432'
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-  presence-api:
+  # 1. Mission Control Dashboard & Studio Web Platform
+  web:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: presence-api
-    environment:
-      NODE_ENV: production
-      PORT: 3001
-      DATABASE_URL: "postgresql://postgres:presence_password@presence-db:5432/presence_db?schema=public"
+    command: pnpm --filter @presence/web start
     ports:
-      - '3001:3001'
-    depends_on:
-      presence-db:
-        condition: service_healthy
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+    restart: always
 
-volumes:
-  postgres_data:
+  # 2. OpenAPI 3.1 REST API & Interactive Scalar Docs Server
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: pnpm --filter @presence/api start
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - NODE_ENV=production
+    restart: always
+
+  # 3. Canva Extension Integration Backend Server
+  canva-extension:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: pnpm --filter @presence/canva-extension start
+    ports:
+      - "3005:3005"
+    environment:
+      - PORT=3005
+      - NODE_ENV=production
+    restart: always

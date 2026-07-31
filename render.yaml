@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: presence-web
+    env: node
+    buildCommand: pnpm install && pnpm build
+    startCommand: pnpm --filter @presence/web start
+    envVars:
+      - key: PORT
+        value: 3000
+
+  - type: web
+    name: presence-api-docs
+    env: node
+    buildCommand: pnpm install && pnpm build
+    startCommand: pnpm --filter @presence/api start
+    envVars:
+      - key: PORT
+        value: 3001
+
+  - type: web
+    name: presence-canva-backend
+    env: node
+    buildCommand: pnpm install && pnpm build
+    startCommand: pnpm --filter @presence/canva-extension start
+    envVars:
+      - key: PORT
+        value: 3005
