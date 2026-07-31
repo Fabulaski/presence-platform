@@ -4,10 +4,12 @@
   "description": "Brings contextual scripture, wisdom, and break reminders into VS Code based on developer activity.",
   "version": "1.0.0",
   "publisher": "presence-platform",
+  "icon": "icon.png",
   "engines": {
     "vscode": "^1.80.0"
   },
   "categories": [
+    "Productivity",
     "Other"
   ],
   "main": "./dist/extension.js",
