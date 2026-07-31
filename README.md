@@ -182,7 +182,36 @@ Dashboard web en tiempo real sincronizado con todas las extensiones (VS Code, Ch
 ```bash
 pnpm --filter @presence/web dev
 ```
-Abre en tu navegador: **`http://localhost:3000`**
+---
+
+## 🛠️ Integración del SDK (`@presence/sdk`)
+
+Puedes integrar Presence en **cualquier aplicación** (React, Next.js, Express, Vue, Angular, React Native, Extensiones o Vanilla JS) en 3 líneas de código:
+
+```typescript
+import { Presence } from '@presence/sdk';
+
+// 1. Inicializar el SDK
+const presence = Presence.initialize({ apiKey: 'pk_live_my_app', debug: true });
+
+// 2. Capturar el contexto y discernir
+const experience = await presence.capture({ activity: 'coding', topic: 'creative_block', language: 'es' });
+
+// 3. Renderizar la experiencia
+if (experience) {
+  console.log(experience.title, experience.scripture.text, experience.reflection);
+}
+```
+
+📘 **Consulta la guía paso a paso completa**: [📖 Guía de Integración del SDK (docs/SDK_INTEGRATION_GUIDE.md)](docs/SDK_INTEGRATION_GUIDE.md)
+
+---
+
+## 📖 Documentación Adicional
+
+- 📘 [Guía de Integración del SDK Paso a Paso](docs/SDK_INTEGRATION_GUIDE.md)
+- 🔌 Especificación OpenAPI 3.1: `http://localhost:3001/openapi.json`
+- 🖥️ Interfaz de Documentación Interactiva Scalar: `http://localhost:3001/docs`
 
 ---
 
