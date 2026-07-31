@@ -159,8 +159,11 @@ export function PopupApp() {
       )}
 
       {/* Discernment Action Grid */}
-      <div style={{ fontSize: '11px', fontWeight: 600, color: '#94A3B8', marginBottom: '8px', textTransform: 'uppercase' }}>
-        {isEs ? 'Discernimiento de Gloo AI:' : 'Gloo AI Discernment:'}
+      <div style={{ fontSize: '11px', fontWeight: 600, color: '#94A3B8', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        {isEs ? '⚡ DISCERNIMIENTO PROACTIVO (GLOO AI):' : '⚡ PROACTIVE AI DISCERNMENT:'}
+      </div>
+      <div style={{ fontSize: '11px', color: '#64748B', marginBottom: '10px' }}>
+        {isEs ? 'Gloo AI analiza tu actividad y necesidad en tiempo real:' : 'Gloo AI analyzes your activity and state in real time:'}
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '16px' }}>
@@ -179,7 +182,7 @@ export function PopupApp() {
             textAlign: 'left'
           }}
         >
-          🕊️ {isEs ? 'Paz & Desahogo' : 'Peace & Relief'}
+          🕊️ {isEs ? 'Paz en Estrés' : 'Peace in Stress'}
         </button>
 
         <button
@@ -197,7 +200,7 @@ export function PopupApp() {
             textAlign: 'left'
           }}
         >
-          💡 {isEs ? 'Sabiduría' : 'Wisdom'}
+          💡 {isEs ? 'Sabiduría en Retos' : 'Wisdom in Decisions'}
         </button>
 
         <button

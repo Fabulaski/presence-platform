@@ -12,63 +12,63 @@ interface GeneratedReflectionData {
 // ─── Fallback Templates (used when OpenAI is unreachable) ──────────────────
 const FALLBACK_TEMPLATES_ES: Record<SpiritualNeed, Array<{ title: string; reflection: (t: string) => string; prayer: string; action: string }>> = {
   wisdom: [
-    { title: 'Luz para tu Código', reflection: (t) => `Al trabajar en ${t}, recuerda que la sabiduría técnica nace de la serenidad. Dios da claridad a tu entendimiento.`, prayer: 'Señor, ilumina mi mente para estructurar soluciones limpias y sabias. Amén.', action: 'Haz una pausa de 60 segundos y toma un vaso de agua.' },
-    { title: 'Claridad y Entendimiento', reflection: (t) => `En medio de la complejidad de ${t}, la verdadera inteligencia consiste en reconocer que la luz viene de arriba.`, prayer: 'Señor, dame paciencia y discernimiento para hallar el camino correcto. Amén.', action: 'Respira profundo 3 veces y retoma el código con calma.' }
+    { title: 'Luz para tus Decisiones', reflection: (t) => `Al avanzar en ${t}, recuerda que la verdadera sabiduría nace de la serenidad y la guía divina. Dios da claridad a tu entendimiento.`, prayer: 'Señor, ilumina mi mente para tomar decisiones sabias y edificantes. Amén.', action: 'Haz una pausa de 60 segundos y toma un vaso de agua.' },
+    { title: 'Claridad y Entendimiento', reflection: (t) => `En medio de tus tareas en ${t}, la inteligencia profunda consiste en reconocer que la luz viene de arriba.`, prayer: 'Señor, dame paciencia y discernimiento para hallar el camino correcto. Amén.', action: 'Respira profundo 3 veces y retoma tu labor con calma.' }
   ],
   rest: [
-    { title: 'Pausa para la Mente', reflection: (t) => `Tu productividad no define tu valor. Tras este tiempo en ${t}, el descanso renueva tus fuerzas.`, prayer: 'Padre, entrego el cansancio mental y permito que tu presencia renueve mis energías. Amén.', action: 'Cierra los ojos 60 segundos y estira los hombros.' },
-    { title: 'Renovación y Vigor', reflection: (t) => `Incluso los mejores desarrolladores necesitan pausar. Al trabajar en ${t}, descansa bajo la sombra del Altísimo.`, prayer: 'Señor, renueva mi espíritu y tráeme paz física y mental. Amén.', action: 'Sepárate de la pantalla un minuto.' }
+    { title: 'Pausa y Descanso para la Mente', reflection: (t) => `Tu productividad no define tu valor como persona. Tras este tiempo en ${t}, el descanso renueva tus fuerzas.`, prayer: 'Padre, entrego el cansancio mental y permito que tu presencia renueve mis energías. Amén.', action: 'Cierra los ojos 60 segundos y estira los hombros.' },
+    { title: 'Renovación y Vigor', reflection: (t) => `En el día a día, toda persona necesita pausar. Al trabajar en ${t}, descansa bajo la sombra del Altísimo.`, prayer: 'Señor, renueva mi espíritu y tráeme paz física y mental. Amén.', action: 'Sepárate de la pantalla un minuto.' }
   ],
   peace: [
-    { title: 'Serenidad en el Desafío', reflection: (t) => `Los errores en ${t} son pasajeros. No permitas que la prisa robe tu paz.`, prayer: 'Señor, entrego cualquier frustración y me refugio en tu paz. Amén.', action: 'Suelta el teclado, exhala suavemente y confía en el proceso.' },
-    { title: 'Paz en la Tormenta Técnica', reflection: (t) => `Cuando las cosas en ${t} no salen al primer intento, la tranquilidad es la clave para la excelencia.`, prayer: 'Padre, dame paz interior para afrontar cualquier error. Amén.', action: 'Tómate 60 segundos para meditar antes de compilar nuevamente.' }
+    { title: 'Paz que Calma la Mente', reflection: (t) => `Los desafíos en ${t} son pasajeros. No permitas que la prisa o el estrés roben tu paz interior.`, prayer: 'Señor, entrego cualquier preocupación y me refugio en tu paz. Amén.', action: 'Exhala suavemente y confía en el proceso de Dios.' },
+    { title: 'Serenidad en el Desafío', reflection: (t) => `Cuando las cosas en ${t} no salen al primer intento, la tranquilidad y la fe son la clave.`, prayer: 'Padre, dame paz interior para afrontar cualquier reto hoy. Amén.', action: 'Tómate 60 segundos para meditar antes de continuar.' }
   ],
   hope: [
-    { title: 'Renovación de la Esperanza', reflection: (t) => `Cada avance en ${t} forma parte de un propósito mayor. El fruto de tu dedicación traerá bendición.`, prayer: 'Señor, llena mi día de esperanza renaciente y alegría. Amén.', action: 'Agradece por este proyecto y continúa con entusiasmo.' },
-    { title: 'Nuevas Perspectivas', reflection: (t) => `No importa cuán difícil parezca ${t}, Dios tiene un futuro de bien para ti.`, prayer: 'Señor, mi esperanza está puesta en ti. Amén.', action: 'Visualiza la meta cumplida y avanza con fe.' }
+    { title: 'Renovación de la Esperanza', reflection: (t) => `Cada paso en ${t} forma parte de un propósito mayor. El fruto de tu dedicación traerá bendición.`, prayer: 'Señor, llena mi día de esperanza renaciente y alegría. Amén.', action: 'Agradece por esta oportunidad y continúa con entusiasmo.' },
+    { title: 'Nuevas Perspectivas de Fe', reflection: (t) => `No importa cuán difícil parezca ${t}, Dios tiene un futuro lleno de bien y propósito para ti.`, prayer: 'Señor, mi esperanza está puesta en ti en todo momento. Amén.', action: 'Visualiza la meta cumplida y avanza con fe.' }
   ],
   perseverance: [
-    { title: 'Constancia que Vence', reflection: (t) => `Grandes sistemas se construyen línea a línea. Al trabajar en ${t}, la constancia supera cualquier obstáculo.`, prayer: 'Señor, fortaléceme para no desmayar y terminar con excelencia. Amén.', action: 'Anota tu próximo objetivo corto y avanza firme.' }
+    { title: 'Constancia y Firmeza', reflection: (t) => `Los grandes proyectos se construyen paso a paso. Al trabajar en ${t}, la constancia supera cualquier obstáculo.`, prayer: 'Señor, fortaléceme para no desmayar y terminar con excelencia. Amén.', action: 'Anota tu próximo objetivo corto y avanza firme.' }
   ],
   courage: [
-    { title: 'Valentía para Innovar', reflection: (t) => `Toma decisiones audaces en ${t}. Dios no nos ha dado espíritu de temor, sino de poder y dominio propio.`, prayer: 'Señor, quita todo temor al fallo y llena mi espíritu de valor. Amén.', action: 'Da el siguiente paso con determinación y fe.' }
+    { title: 'Valentía para Innovar', reflection: (t) => `Toma decisiones audaces en ${t}. Dios no nos ha dado espíritu de temor, sino de poder, amor y dominio propio.`, prayer: 'Señor, quita todo temor al fallo y llena mi espíritu de valor. Amén.', action: 'Da el siguiente paso con determinación y fe.' }
   ],
   comfort: [
-    { title: 'Consuelo y Aliento', reflection: (t) => `Si sientes agobio en ${t}, recuerda que Dios está cercano para consolarte y sostenerte.`, prayer: 'Señor, tú eres mi refugio y el consuelo de mi alma. Amén.', action: 'Permítete sentir su paz e inspira aliento divino.' }
+    { title: 'Consuelo y Aliento en la Jornada', reflection: (t) => `Si sientes agobio en ${t}, recuerda que Dios está cercano a ti para consolarte y sostenerte.`, prayer: 'Señor, tú eres mi refugio y el consuelo de mi alma. Amén.', action: 'Permítete sentir su paz e inspira aliento divino.' }
   ],
   joy: [
-    { title: 'Gozo en la Creación', reflection: (t) => `Disfruta el proceso de crear en ${t}. El gozo del Señor es la verdadera fortaleza.`, prayer: 'Señor, que tu gozo inunde mi corazón mientras desarrollo. Amén.', action: 'Sonríe, celebra tus logros y sigue compartiendo alegría.' }
+    { title: 'Gozo y Gratitud en la Creación', reflection: (t) => `Disfruta el proceso de crear y avanzar en ${t}. El gozo del Señor es tu verdadera fortaleza.`, prayer: 'Señor, que tu gozo inunde mi corazón mientras realizo mis tareas. Amén.', action: 'Sonríe, celebra tus logros y sigue compartiendo alegría.' }
   ]
 };
 
 const FALLBACK_TEMPLATES_EN: Record<SpiritualNeed, Array<{ title: string; reflection: (t: string) => string; prayer: string; action: string }>> = {
   wisdom: [
-    { title: 'Light for Your Code', reflection: (t) => `As you work on ${t}, remember that technical wisdom springs from serenity. God grants clarity to your understanding.`, prayer: 'Lord, illuminate my mind to structure clean and wise solutions. Amen.', action: 'Take a 60-second pause and drink a glass of water.' },
-    { title: 'Clarity and Understanding', reflection: (t) => `Amid the complexity of ${t}, true intelligence is recognizing that light comes from above.`, prayer: 'Lord, give me patience and discernment to find the right path. Amen.', action: 'Take 3 deep breaths and return to coding calmly.' }
+    { title: 'Light for Your Decisions', reflection: (t) => `As you progress in ${t}, remember that true wisdom springs from serenity and divine guidance.`, prayer: 'Lord, illuminate my mind to make wise and uplifting decisions. Amen.', action: 'Take a 60-second pause and drink a glass of water.' },
+    { title: 'Clarity and Understanding', reflection: (t) => `Amid your daily tasks in ${t}, true intelligence is recognizing that light comes from above.`, prayer: 'Lord, give me patience and discernment to find the right path. Amen.', action: 'Take 3 deep breaths and return to your work calmly.' }
   ],
   rest: [
-    { title: 'Pause for the Mind', reflection: (t) => `Your productivity does not define your worth. After working on ${t}, rest renews your strength.`, prayer: 'Father, I surrender mental fatigue and let Your presence refresh my energy. Amen.', action: 'Close your eyes for 60 seconds and stretch your shoulders.' },
-    { title: 'Renewal and Vigor', reflection: (t) => `Even the best developers need to pause. Working on ${t}, rest under the shadow of the Most High.`, prayer: 'Lord, renew my spirit and bring physical and mental peace. Amen.', action: 'Step away from the screen for one minute.' }
+    { title: 'Pause and Rest for the Mind', reflection: (t) => `Your productivity does not define your worth as a person. Working on ${t}, rest renews your strength.`, prayer: 'Father, I surrender mental fatigue and let Your presence refresh my energy. Amen.', action: 'Close your eyes for 60 seconds and stretch your shoulders.' },
+    { title: 'Renewal and Vigor', reflection: (t) => `In daily life, everyone needs to pause. Working on ${t}, rest under the shadow of the Most High.`, prayer: 'Lord, renew my spirit and bring physical and mental peace. Amen.', action: 'Step away from the screen for one minute.' }
   ],
   peace: [
-    { title: 'Serenity in the Challenge', reflection: (t) => `Errors in ${t} are temporary. Do not let rush steal your peace.`, prayer: 'Lord, I surrender all frustration and rest in Your peace. Amen.', action: 'Release the keyboard, exhale softly, and trust the process.' },
-    { title: 'Peace in the Technical Storm', reflection: (t) => `When things in ${t} do not work on the first try, calm is the key to excellence.`, prayer: 'Father, grant me inner peace to face any error. Amen.', action: 'Take 60 seconds to meditate before compiling again.' }
+    { title: 'Peace That Calms the Mind', reflection: (t) => `Challenges in ${t} are temporary. Do not let rush or stress steal your inner peace.`, prayer: 'Lord, I surrender all worry and rest in Your peace. Amen.', action: 'Exhale softly and trust God\'s process.' },
+    { title: 'Serenity in the Challenge', reflection: (t) => `When things in ${t} do not work on the first try, calm and faith are the key.`, prayer: 'Father, grant me inner peace to face any challenge today. Amen.', action: 'Take 60 seconds to meditate before continuing.' }
   ],
   hope: [
     { title: 'Renewal of Hope', reflection: (t) => `Every step forward in ${t} is part of a greater purpose. Your dedication will bring blessing.`, prayer: 'Lord, fill my day with renewed hope and joy. Amen.', action: 'Be thankful for this project and continue with enthusiasm.' },
-    { title: 'Fresh Perspectives', reflection: (t) => `No matter how difficult ${t} seems, God has a future of good for you.`, prayer: 'Lord, my hope is anchored in You. Amen.', action: 'Visualize the goal accomplished and move forward in faith.' }
+    { title: 'Fresh Perspectives of Faith', reflection: (t) => `No matter how difficult ${t} seems, God has a future filled with good for you.`, prayer: 'Lord, my hope is anchored in You at all times. Amen.', action: 'Visualize the goal accomplished and move forward in faith.' }
   ],
   perseverance: [
-    { title: 'Perseverance Overcomes', reflection: (t) => `Great systems are built line by line. Working on ${t}, constancy overcomes any obstacle.`, prayer: 'Lord, strengthen me so I do not grow weary and finish with excellence. Amen.', action: 'Write down your next short goal and move forward firmly.' }
+    { title: 'Constancy and Strength', reflection: (t) => `Great projects are built step by step. Working on ${t}, constancy overcomes any obstacle.`, prayer: 'Lord, strengthen me so I do not grow weary and finish with excellence. Amen.', action: 'Write down your next short goal and move forward firmly.' }
   ],
   courage: [
-    { title: 'Courage to Innovate', reflection: (t) => `Make bold decisions in ${t}. God has not given us a spirit of fear, but of power and sound mind.`, prayer: 'Lord, remove all fear of failure and fill my spirit with courage. Amen.', action: 'Take the next step with determination and faith.' }
+    { title: 'Courage to Innovate', reflection: (t) => `Make bold decisions in ${t}. God has not given us a spirit of fear, but of power, love, and sound mind.`, prayer: 'Lord, remove all fear of failure and fill my spirit with courage. Amen.', action: 'Take the next step with determination and faith.' }
   ],
   comfort: [
     { title: 'Comfort and Encouragement', reflection: (t) => `If you feel overwhelmed in ${t}, remember God is near to comfort and uphold you.`, prayer: 'Lord, You are my refuge and the comfort of my soul. Amen.', action: 'Allow yourself to feel His peace and draw fresh breath.' }
   ],
   joy: [
-    { title: 'Joy in Creation', reflection: (t) => `Enjoy the process of creating in ${t}. The joy of the Lord is your true strength.`, prayer: 'Lord, let Your joy fill my heart as I build. Amen.', action: 'Smile, celebrate your progress, and share joy.' }
+    { title: 'Joy and Gratitude in Work', reflection: (t) => `Enjoy the process of creating and progressing in ${t}. The joy of the Lord is your true strength.`, prayer: 'Lord, let Your joy fill my heart as I fulfill my tasks. Amen.', action: 'Smile, celebrate your progress, and share joy.' }
   ]
 };
 
@@ -338,35 +338,37 @@ Analyze the user activity and return JSON:
     const needLabels = LANG_LABELS[lang] || LANG_LABELS['es'];
 
     const systemPrompt = isEn
-      ? `You are the Spiritual Reflection Agent of Presence Platform. Your mission is to generate a brief, warm, authentic pastoral reflection for a software developer.
+      ? `You are the Spiritual Reflection Agent of Presence Platform. Your mission is to generate a brief, warm, authentic, human-centered reflection for a person engaged in daily work, creation, or study.
 
 CRITICAL INSTRUCTIONS:
 - Write 100% of your output in ENGLISH (title, reflection, prayer, action).
-- Connect the Bible verse directly to the developer's current coding task/file.
+- Speak warmly to a person facing daily tasks, decisions, and challenges ("In your daily work...", "In your projects...", "In your decisions..."). NEVER use terms like "developer", "coder", or technical jargon.
+- The TITLE MUST BE CREATIVE AND SPECIFICALLY MATCH THE DISCERNED SPIRITUAL NEED (${needLabels[need] || need}). DO NOT use "Wisdom" in the title unless the spiritual need is explicitly "wisdom". If the need is peace, title it around peace; if rest, around rest; if hope, around hope; if joy, around joy.
 - The prayer must be brief (1-2 sentences), intimate, ending in Amen.
 - The action must be a practical 60-second micro-break.
-- The title must be creative, in ENGLISH, unique every time, maximum 5 words.
+- The title must be maximum 5 words.
 
 Respond EXCLUSIVELY in JSON format:
 {
-  "title": "Creative short title in English",
-  "reflection": "Reflection in English connecting the verse to the software developer",
+  "title": "Creative short title matching the spiritual need (${needLabels[need] || need})",
+  "reflection": "Warm human reflection connecting the verse to daily life and tasks",
   "prayer": "Short intimate prayer ending in Amen in English",
   "action": "Practical 60-second micro-action in English"
 }`
-      : `Eres el Agente de Reflexión Espiritual de Presence Platform. Tu misión es generar un momento de acompañamiento espiritual breve, cálido y genuino para un desarrollador de software.
+      : `Eres el Agente de Reflexión Espiritual de Presence Platform. Tu misión es generar un momento de acompañamiento espiritual breve, cálido, humano y genuino para una persona en su día a día de trabajo, creación o estudio.
 
 INSTRUCCIONES CRÍTICAS:
 - Escribe el 100% de tu respuesta en ESPAÑOL (título, reflexión, oración, acción).
-- La reflexión debe conectar el versículo bíblico con la experiencia concreta del desarrollador.
+- Habla de forma humana, cercana y amigable a cualquier persona ("En tu día a día...", "En tus proyectos...", "En tus decisiones..."). JAMÁS uses palabras como "desarrollador", "código" o jerga técnica.
+- EL TÍTULO DEBE SER CREATIVO Y REFLEJAR OBLIGATORIAMENTE LA NECESIDAD ESPIRITUAL DISCERNIDA (${needLabels[need] || need}). NO uses la palabra "Sabiduría" a menos que la necesidad sea explícitamente "wisdom". Si es paz, el título debe ser sobre paz; si es descanso, sobre descanso; si es esperanza, sobre esperanza; si es gozo, sobre gozo.
 - La oración debe ser breve (1-2 frases), íntima, terminando en Amén.
 - La micro-acción debe ser práctica, realizable en 60 segundos.
-- El título debe ser creativo, en ESPAÑOL, diferente cada vez, máximo 5 palabras.
+- El título debe ser de máximo 5 palabras.
 
 Responde EXCLUSIVAMENTE en JSON format:
 {
-  "title": "Título creativo y breve en español",
-  "reflection": "Reflexión en español conectando el versículo con el desarrollador",
+  "title": "Título creativo en español reflejando la necesidad (${needLabels[need] || need})",
+  "reflection": "Reflexión humana en español conectando el versículo con la vida cotidiana",
   "prayer": "Oración breve y cercana terminando en Amén",
   "action": "Micro-acción práctica de 60 segundos en español"
 }`;
