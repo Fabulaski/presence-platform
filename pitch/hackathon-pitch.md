@@ -46,18 +46,4 @@ Mostramos cómo el mismo backend impulsa 3 experiencias completamente distintas 
 - **B2B2C SaaS**: Modelo por consumo API / suscripción por app conectada.
 - **Arquitectura Hexagonal en Monorepo Turborepo**: Pruebas automatizadas, CLI oficial (`npx presence`), OpenAPI 3.1 y esquema PostgreSQL/Supabase optimizado para millones de eventos.
 
----
-
-## 🎙️ Guión para el Pitch (Speakers Script)
-
-> "Estimado jurado, hoy no venimos a presentarles una aplicación más para la hackathon. Venimos a presentarles una infraestructura.
-> 
-> Todos conocemos el impacto gigante de YouVersion y Gloo AI. Sin embargo, hoy en día existe una barrera: la Escritura sigue estando confinada a que el usuario recuerde abrir una app.
-> 
-> Presentamos **Presence Platform**. La primera infraestructura SaaS que lleva la Escritura exactamente a donde la gente ya pasa su tiempo.
-> 
-> Mediante un SDK de 3 líneas de código, cualquier desarrollador de video, música o software puede capturar eventos de contexto. Nuestro motor **Context Engine**, impulsado por agentes de Gloo AI y la API de YouVersion, analiza el momento y discierne si debe ofrecer una pausa, una oración o un pasaje transformador.
-> 
-> Y lo más importante: no guardamos chats. Guardamos un **Grafo Espiritual de Crecimiento por Capítulos**, permitiendo que cada intervención futura sea más relevante y humana.
-> 
-> No construimos una app para esta hackathon. Construimos el motor para que la Escritura esté presente en todo el ecosistema digital del mañana. Muchas gracias."
+-
