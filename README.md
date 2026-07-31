@@ -209,6 +209,7 @@ if (experience) {
 
 ## 📖 Documentación Adicional
 
+- 🤖 [Documentación del Motor de IA (Gloo AI Engine) & Prompts del Sistema](docs/GLOO_AI_ENGINE_AND_PROMPTS.md)
 - 📘 [Guía de Integración del SDK Paso a Paso](docs/SDK_INTEGRATION_GUIDE.md)
 - 🔑 [Guía de Configuración y Cambio de Llaves API de Gloo AI y YouVersion](docs/API_CONFIGURATION_GUIDE.md)
 - 🔌 Especificación OpenAPI 3.1: `http://localhost:3001/openapi.json`
